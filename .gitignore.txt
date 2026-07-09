@@ -1,0 +1,10 @@
+build/
+*.user
+*.user.*
+*.o
+*.obj
+moc_*
+ui_*
+qrc_*
+*.dll
+*.exe
