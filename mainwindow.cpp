@@ -6,9 +6,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     listenerRepo = new ListenerRepository();
     songRepo = new SongRepository();
 
-    artistRepo->save(new Artist(1, "Ali Alavi", "artist1", "Bio", "1234"));
-    listenerRepo->save(new Listener(2, "Reza Rezaei", "listener1", "Bio", "1234"));
-
     setupLoginUI();
     setWindowTitle("Spotify Music");
     resize(400, 300);

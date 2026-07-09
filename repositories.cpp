@@ -1,177 +1,142 @@
 #include "repositories.h"
+#include "databasemanager.h"
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QDebug>
 
-Song* SongRepository::save(Song* entity) {
-    if (entity->getId() == 0) {
-        QList<Song*> existing = storage;
-        for (int i = 0; i < existing.size(); ++i) {
-            if (existing.at(i)->getName() == entity->getName()) {
-                delete entity;
-                return existing.at(i);
-            }
-        }
-        Song* newSong = new Song(nextId++, entity->getName(), 0, "", "", entity->getArtistId(), entity->getAlbumId());
-        storage.append(newSong);
-        delete entity;
-        return newSong;
-    }
-    return entity;
-}
+QList<Song*> SongRepository::getAll() { return QList<Song*>(); }
+Song* SongRepository::save(Song* entity) { return entity; }
+bool SongRepository::remove(int id) { return false; }
+Song* SongRepository::search(int id) { return nullptr; }
+QList<Song*> SongRepository::singleSongs(int artistId) { return QList<Song*>(); }
+QList<Song*> SongRepository::getByAlbum(int albumId) { return QList<Song*>(); }
+QList<Song*> SongRepository::getByArtist(int artistId) { return QList<Song*>(); }
 
-bool SongRepository::remove(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) {
-            delete storage.takeAt(i);
-            return true;
-        }
-    }
-    return false;
-}
-
-Song* SongRepository::search(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) return storage.at(i);
-    }
-    return nullptr;
-}
-
-QList<Song*> SongRepository::singleSongs(int artistId) {
-    QList<Song*> result;
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getArtistId() == artistId && storage.at(i)->getAlbumId() == 0) {
-            result.append(storage.at(i));
-        }
-    }
-    return result;
-}
-
-QList<Song*> SongRepository::getByAlbum(int albumId) {
-    QList<Song*> result;
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getAlbumId() == albumId) result.append(storage.at(i));
-    }
-    return result;
-}
-
-QList<Song*> SongRepository::getByArtist(int artistId) {
-    QList<Song*> result;
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getArtistId() == artistId) result.append(storage.at(i));
-    }
-    return result;
-}
-
-Playlist* PlaylistRepository::save(Playlist* entity) {
-    storage.append(entity);
-    return entity;
-}
-
-bool PlaylistRepository::remove(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) {
-            delete storage.takeAt(i);
-            return true;
-        }
-    }
-    return false;
-}
-
-Playlist* PlaylistRepository::search(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) return storage.at(i);
-    }
-    return nullptr;
-}
-
-void PlaylistRepository::insertSong(int playlistId, int songId) {
-    Playlist* pl = search(playlistId);
-    if (pl) pl->addSong(songId);
-}
-
-void PlaylistRepository::removeSong(int playlistId, int songId) {
-    Playlist* pl = search(playlistId);
-    if (pl) pl->removeSong(songId);
-}
-
-QList<Playlist*> PlaylistRepository::playlists(int listenerId) {
-    QList<Playlist*> result;
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getListenerId() == listenerId) result.append(storage.at(i));
-    }
-    return result;
-}
+QList<Playlist*> PlaylistRepository::getAll() { return QList<Playlist*>(); }
+Playlist* PlaylistRepository::save(Playlist* entity) { return entity; }
+bool PlaylistRepository::remove(int id) { return false; }
+Playlist* PlaylistRepository::search(int id) { return nullptr; }
+void PlaylistRepository::insertSong(int playlistId, int songId) {}
+void PlaylistRepository::removeSong(int playlistId, int songId) {}
+QList<Playlist*> PlaylistRepository::playlists(int listenerId) { return QList<Playlist*>(); }
 
 Account* ArtistRepository::save(Account* entity) {
-    storage.append(dynamic_cast<Artist*>(entity));
-    return entity;
+    QSqlQuery query;
+    query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password) "
+                  "VALUES (?, ?, ?, ?, ?)");
+    query.addBindValue(entity->getFullName());
+    query.addBindValue(entity->getUserName());
+    query.addBindValue(entity->getBiography());
+    query.addBindValue("Artist");
+    query.addBindValue(entity->getPassword());
+
+    if (!query.exec()) {
+        qDebug() << "Error saving artist:" << query.lastError().text();
+    }
+    delete entity;
+    return nullptr;
 }
 
 bool ArtistRepository::remove(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) {
-            delete storage.takeAt(i);
-            return true;
-        }
-    }
-    return false;
+    QSqlQuery query;
+    query.prepare("DELETE FROM accounts WHERE id = ? AND role = 'Artist'");
+    query.addBindValue(id);
+    return query.exec();
 }
 
 Account* ArtistRepository::search(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) return storage.at(i);
+    QSqlQuery query;
+    query.prepare("SELECT * FROM accounts WHERE id = ? AND role = 'Artist'");
+    query.addBindValue(id);
+    if (query.exec() && query.next()) {
+        return new Artist(query.value(0).toInt(), query.value(1).toString(),
+                          query.value(2).toString(), query.value(3).toString(),
+                          query.value(5).toString());
     }
     return nullptr;
 }
 
 QList<Account*> ArtistRepository::getAll() {
     QList<Account*> result;
-    for (int i = 0; i < storage.size(); ++i) result.append(storage.at(i));
+    QSqlQuery query("SELECT * FROM accounts WHERE role = 'Artist'");
+    while (query.next()) {
+        result.append(new Artist(query.value(0).toInt(), query.value(1).toString(),
+                                 query.value(2).toString(), query.value(3).toString(),
+                                 query.value(5).toString()));
+    }
     return result;
 }
 
 Account* ArtistRepository::searchByUserName(QString userName) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getUserName() == userName) return storage.at(i);
+    QSqlQuery query;
+    query.prepare("SELECT * FROM accounts WHERE userName = ? AND role = 'Artist'");
+    query.addBindValue(userName);
+    if (query.exec() && query.next()) {
+        return new Artist(query.value(0).toInt(), query.value(1).toString(),
+                          query.value(2).toString(), query.value(3).toString(),
+                          query.value(5).toString());
     }
     return nullptr;
 }
 
 Account* ListenerRepository::save(Account* entity) {
-    storage.append(dynamic_cast<Listener*>(entity));
-    return entity;
+    QSqlQuery query;
+    query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password) "
+                  "VALUES (?, ?, ?, ?, ?)");
+    query.addBindValue(entity->getFullName());
+    query.addBindValue(entity->getUserName());
+    query.addBindValue(entity->getBiography());
+    query.addBindValue("Listener");
+    query.addBindValue(entity->getPassword());
+
+    if (!query.exec()) {
+        qDebug() << "Error saving listener:" << query.lastError().text();
+    }
+    delete entity;
+    return nullptr;
 }
 
 bool ListenerRepository::remove(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) {
-            delete storage.takeAt(i);
-            return true;
-        }
-    }
-    return false;
+    QSqlQuery query;
+    query.prepare("DELETE FROM accounts WHERE id = ? AND role = 'Listener'");
+    query.addBindValue(id);
+    return query.exec();
 }
 
 Account* ListenerRepository::search(int id) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getId() == id) return storage.at(i);
+    QSqlQuery query;
+    query.prepare("SELECT * FROM accounts WHERE id = ? AND role = 'Listener'");
+    query.addBindValue(id);
+    if (query.exec() && query.next()) {
+        return new Listener(query.value(0).toInt(), query.value(1).toString(),
+                            query.value(2).toString(), query.value(3).toString(),
+                            query.value(5).toString());
     }
     return nullptr;
 }
 
 QList<Account*> ListenerRepository::getAll() {
     QList<Account*> result;
-    for (int i = 0; i < storage.size(); ++i) result.append(storage.at(i));
+    QSqlQuery query("SELECT * FROM accounts WHERE role = 'Listener'");
+    while (query.next()) {
+        result.append(new Listener(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toString(), query.value(3).toString(),
+                                   query.value(5).toString()));
+    }
     return result;
 }
 
 Account* ListenerRepository::searchByUserName(QString userName) {
-    for (int i = 0; i < storage.size(); ++i) {
-        if (storage.at(i)->getUserName() == userName) return storage.at(i);
+    QSqlQuery query;
+    query.prepare("SELECT * FROM accounts WHERE userName = ? AND role = 'Listener'");
+    query.addBindValue(userName);
+    if (query.exec() && query.next()) {
+        return new Listener(query.value(0).toInt(), query.value(1).toString(),
+                            query.value(2).toString(), query.value(3).toString(),
+                            query.value(5).toString());
     }
     return nullptr;
 }
 
 void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {}
-
-bool ListenerRepository::isLiked(int listenerId, int songId) {
-    return false;
-}
+bool ListenerRepository::isLiked(int listenerId, int songId) { return false; }

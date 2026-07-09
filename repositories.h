@@ -15,30 +15,22 @@ public:
 };
 
 class SongRepository : public AbstractRepository<Song> {
-private:
-    QList<Song*> storage;
-    int nextId;
 public:
-    SongRepository() : nextId(1) {}
     Song* save(Song* entity) override;
     bool remove(int id) override;
     Song* search(int id) override;
-    QList<Song*> getAll() override { return storage; }
+    QList<Song*> getAll() override;
     QList<Song*> singleSongs(int artistId);
     QList<Song*> getByAlbum(int albumId);
     QList<Song*> getByArtist(int artistId);
 };
 
 class PlaylistRepository : public AbstractRepository<Playlist> {
-private:
-    QList<Playlist*> storage;
-    int nextId;
 public:
-    PlaylistRepository() : nextId(1) {}
     Playlist* save(Playlist* entity) override;
     bool remove(int id) override;
     Playlist* search(int id) override;
-    QList<Playlist*> getAll() override { return storage; }
+    QList<Playlist*> getAll() override;
     void insertSong(int playlistId, int songId);
     void removeSong(int playlistId, int songId);
     QList<Playlist*> playlists(int listenerId);
@@ -50,11 +42,7 @@ public:
 };
 
 class ArtistRepository : public AccountRepository {
-private:
-    QList<Artist*> storage;
-    int nextId;
 public:
-    ArtistRepository() : nextId(1) {}
     Account* save(Account* entity) override;
     bool remove(int id) override;
     Account* search(int id) override;
@@ -63,11 +51,7 @@ public:
 };
 
 class ListenerRepository : public AccountRepository {
-private:
-    QList<Listener*> storage;
-    int nextId;
 public:
-    ListenerRepository() : nextId(1) {}
     Account* save(Account* entity) override;
     bool remove(int id) override;
     Account* search(int id) override;
