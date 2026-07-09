@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include "artistwindow.h"
+#include "listenerwindow.h"
 #include "entities.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
@@ -60,13 +62,17 @@ void MainWindow::attemptLogin() {
 
     if (foundArtist) {
         if (foundArtist->getPassword() == pass) {
-            QMessageBox::information(this, "Success", "Welcome Artist: " + foundArtist->getUserName());
+            this->hide();
+            ArtistWindow* aw = new ArtistWindow(foundArtist, artistRepo, songRepo);
+            aw->show();
         } else {
             QMessageBox::warning(this, "Error", "Incorrect Password.");
         }
     } else if (foundListener) {
         if (foundListener->getPassword() == pass) {
-            QMessageBox::information(this, "Success", "Welcome Listener: " + foundListener->getUserName());
+            this->hide();
+            ListenerWindow* lw = new ListenerWindow(foundListener, listenerRepo, songRepo);
+            lw->show();
         } else {
             QMessageBox::warning(this, "Error", "Incorrect Password.");
         }
