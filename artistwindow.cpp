@@ -1,9 +1,11 @@
 #include "artistwindow.h"
-#include <qlabel.h>
+#include "repositories.h"
+#include <QLabel>
 
 ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent)
     : QMainWindow(parent), currentArtist(user), artistRepo(aRepo), songRepo(sRepo) {
 
+    albumRepo = new AlbumRepository();
     setWindowTitle("Artist Dashboard - " + currentArtist->getUserName());
     resize(500, 400);
     setupUI();
@@ -12,6 +14,7 @@ ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepositor
 
 ArtistWindow::~ArtistWindow() {
     delete currentArtist;
+    delete albumRepo;
 }
 
 void ArtistWindow::setupUI() {
@@ -45,26 +48,47 @@ void ArtistWindow::setupUI() {
 void ArtistWindow::refreshAlbums() {
     albumsList->clear();
     albumsList->addItem("Singles");
+
+    QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
+    for (int i = 0; i < myAlbums.size(); ++i) {
+        albumsList->addItem(myAlbums.at(i)->getName());
+    }
 }
 
 void ArtistWindow::addAlbum() {
     bool ok;
     QString name = QInputDialog::getText(this, "Add Album", "Album Name:", QLineEdit::Normal, "", &ok);
     if (ok && !name.isEmpty()) {
-        QMessageBox::information(this, "Success", "Album created successfully (DB integration needed).");
+        albumRepo->save(new Album(0, name, currentArtist->getId(), ""));
+        QMessageBox::information(this, "Success", "Album created successfully in database.");
         refreshAlbums();
     }
 }
 
 void ArtistWindow::addSong() {
+    QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
     QStringList items;
-    items << "Singles";
+    items << "Singles (No Album)";
+    for (int i = 0; i < myAlbums.size(); ++i) {
+        items << myAlbums.at(i)->getName();
+    }
+
     bool ok;
     QString choice = QInputDialog::getItem(this, "Add Song", "Select Album:", items, 0, false, &ok);
     if (ok) {
         QString name = QInputDialog::getText(this, "Add Song", "Song Name:", QLineEdit::Normal, "", &ok);
         if (ok && !name.isEmpty()) {
-            QMessageBox::information(this, "Success", "Song added successfully.");
+            int selectedAlbumId = 0;
+            if (choice != "Singles (No Album)") {
+                for (int i = 0; i < myAlbums.size(); ++i) {
+                    if (myAlbums.at(i)->getName() == choice) {
+                        selectedAlbumId = myAlbums.at(i)->getId();
+                        break;
+                    }
+                }
+            }
+            songRepo->save(new Song(0, name, 0, "", "", currentArtist->getId(), selectedAlbumId));
+            QMessageBox::information(this, "Success", "Song added successfully in database.");
         }
     }
 }

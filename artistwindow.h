@@ -16,6 +16,7 @@ private:
     Account* currentArtist;
     ArtistRepository* artistRepo;
     SongRepository* songRepo;
+    AlbumRepository* albumRepo;
 
     QWidget* centralWidget;
     QListWidget* albumsList;

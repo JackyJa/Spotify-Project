@@ -23,6 +23,30 @@ bool DatabaseManager::init() {
                "role TEXT, "
                "password TEXT)");
 
+    query.exec("CREATE TABLE IF NOT EXISTS accounts ("
+               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "fullName TEXT, "
+               "userName TEXT UNIQUE, "
+               "biography TEXT, "
+               "role TEXT, "
+               "password TEXT)");
+
+    query.exec("CREATE TABLE IF NOT EXISTS albums ("
+               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "name TEXT, "
+               "artistId INTEGER, "
+               "coverPath TEXT)");
+
+    query.exec("CREATE TABLE IF NOT EXISTS songs ("
+               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "name TEXT, "
+               "releaseYear INTEGER, "
+               "genre TEXT, "
+               "audioFilePath TEXT, "
+               "artistId INTEGER, "
+               "albumId INTEGER, "
+               "coverPath TEXT)");
+
     return true;
 }
 

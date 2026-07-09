@@ -60,3 +60,12 @@ public:
     void updateLiked(int listenerId, int songId, bool isLiked);
     bool isLiked(int listenerId, int songId);
 };
+
+class AlbumRepository : public AbstractRepository<Album> {
+public:
+    Album* save(Album* entity) override;
+    bool remove(int id) override;
+    Album* search(int id) override;
+    QList<Album*> getAll() override;
+    QList<Album*> albums(int artistId);
+};

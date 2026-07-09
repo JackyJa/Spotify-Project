@@ -4,13 +4,104 @@
 #include <QSqlError>
 #include <QDebug>
 
-QList<Song*> SongRepository::getAll() { return QList<Song*>(); }
-Song* SongRepository::save(Song* entity) { return entity; }
-bool SongRepository::remove(int id) { return false; }
-Song* SongRepository::search(int id) { return nullptr; }
-QList<Song*> SongRepository::singleSongs(int artistId) { return QList<Song*>(); }
-QList<Song*> SongRepository::getByAlbum(int albumId) { return QList<Song*>(); }
-QList<Song*> SongRepository::getByArtist(int artistId) { return QList<Song*>(); }
+QList<Song*> SongRepository::getAll() {
+    QList<Song*> result;
+    QSqlQuery query("SELECT * FROM songs");
+    while (query.next()) {
+        result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                               query.value(2).toInt(), query.value(3).toString(),
+                               query.value(4).toString(), query.value(5).toInt(),
+                               query.value(6).toInt()));
+    }
+    return result;
+}
+
+Song* SongRepository::save(Song* entity) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO songs (name, releaseYear, genre, audioFilePath, artistId, albumId, coverPath) "
+                  "VALUES (?, ?, ?, ?, ?, ?, ?)");
+    query.addBindValue(entity->getName());
+    query.addBindValue(0);
+    query.addBindValue("");
+    query.addBindValue("");
+    query.addBindValue(entity->getArtistId());
+    query.addBindValue(entity->getAlbumId());
+    query.addBindValue("");
+
+    if (query.exec()) {
+        delete entity;
+        return nullptr;
+    }
+    return entity;
+}
+
+bool SongRepository::remove(int id) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM songs WHERE id = ?");
+    query.addBindValue(id);
+    return query.exec();
+}
+
+Song* SongRepository::search(int id) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM songs WHERE id = ?");
+    query.addBindValue(id);
+    if (query.exec() && query.next()) {
+        return new Song(query.value(0).toInt(), query.value(1).toString(),
+                        query.value(2).toInt(), query.value(3).toString(),
+                        query.value(4).toString(), query.value(5).toInt(),
+                        query.value(6).toInt());
+    }
+    return nullptr;
+}
+
+QList<Song*> SongRepository::singleSongs(int artistId) {
+    QList<Song*> result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM songs WHERE artistId = ? AND albumId = 0");
+    query.addBindValue(artistId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt(), query.value(3).toString(),
+                                   query.value(4).toString(), query.value(5).toInt(),
+                                   query.value(6).toInt()));
+        }
+    }
+    return result;
+}
+
+QList<Song*> SongRepository::getByAlbum(int albumId) {
+    QList<Song*> result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM songs WHERE albumId = ?");
+    query.addBindValue(albumId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt(), query.value(3).toString(),
+                                   query.value(4).toString(), query.value(5).toInt(),
+                                   query.value(6).toInt()));
+        }
+    }
+    return result;
+}
+
+QList<Song*> SongRepository::getByArtist(int artistId) {
+    QList<Song*> result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM songs WHERE artistId = ?");
+    query.addBindValue(artistId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt(), query.value(3).toString(),
+                                   query.value(4).toString(), query.value(5).toInt(),
+                                   query.value(6).toInt()));
+        }
+    }
+    return result;
+}
 
 QList<Playlist*> PlaylistRepository::getAll() { return QList<Playlist*>(); }
 Playlist* PlaylistRepository::save(Playlist* entity) { return entity; }
@@ -140,3 +231,60 @@ Account* ListenerRepository::searchByUserName(QString userName) {
 
 void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {}
 bool ListenerRepository::isLiked(int listenerId, int songId) { return false; }
+
+
+Album* AlbumRepository::save(Album* entity) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO albums (name, artistId, coverPath) VALUES (?, ?, ?)");
+    query.addBindValue(entity->getName());
+    query.addBindValue(entity->getArtistId());
+    query.addBindValue("");
+
+    if (query.exec()) {
+        delete entity;
+        return nullptr;
+    }
+    return entity;
+}
+
+bool AlbumRepository::remove(int id) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM albums WHERE id = ?");
+    query.addBindValue(id);
+    return query.exec();
+}
+
+Album* AlbumRepository::search(int id) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM albums WHERE id = ?");
+    query.addBindValue(id);
+    if (query.exec() && query.next()) {
+        return new Album(query.value(0).toInt(), query.value(1).toString(),
+                         query.value(2).toInt(), query.value(3).toString());
+    }
+    return nullptr;
+}
+
+QList<Album*> AlbumRepository::getAll() {
+    QList<Album*> result;
+    QSqlQuery query("SELECT * FROM albums");
+    while (query.next()) {
+        result.append(new Album(query.value(0).toInt(), query.value(1).toString(),
+                                query.value(2).toInt(), query.value(3).toString()));
+    }
+    return result;
+}
+
+QList<Album*> AlbumRepository::albums(int artistId) {
+    QList<Album*> result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM albums WHERE artistId = ?");
+    query.addBindValue(artistId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Album(query.value(0).toInt(), query.value(1).toString(),
+                                    query.value(2).toInt(), query.value(3).toString()));
+        }
+    }
+    return result;
+}
