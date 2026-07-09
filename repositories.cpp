@@ -103,13 +103,80 @@ QList<Song*> SongRepository::getByArtist(int artistId) {
     return result;
 }
 
-QList<Playlist*> PlaylistRepository::getAll() { return QList<Playlist*>(); }
-Playlist* PlaylistRepository::save(Playlist* entity) { return entity; }
-bool PlaylistRepository::remove(int id) { return false; }
-Playlist* PlaylistRepository::search(int id) { return nullptr; }
-void PlaylistRepository::insertSong(int playlistId, int songId) {}
-void PlaylistRepository::removeSong(int playlistId, int songId) {}
-QList<Playlist*> PlaylistRepository::playlists(int listenerId) { return QList<Playlist*>(); }
+QList<Playlist*> PlaylistRepository::getAll() {
+    QList<Playlist*> result;
+    QSqlQuery query("SELECT * FROM playlists");
+    while (query.next()) {
+        result.append(new Playlist(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt()));
+    }
+    return result;
+}
+
+Playlist* PlaylistRepository::save(Playlist* entity) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO playlists (name, listenerId) VALUES (?, ?)");
+    query.addBindValue(entity->getName());
+    query.addBindValue(entity->getListenerId());
+
+    if (query.exec()) {
+        delete entity;
+        return nullptr;
+    }
+    return entity;
+}
+
+bool PlaylistRepository::remove(int id) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM playlists WHERE id = ?");
+    query.addBindValue(id);
+    query.exec();
+
+    query.prepare("DELETE FROM playlist_songs WHERE playlistId = ?");
+    query.addBindValue(id);
+    return query.exec();
+}
+
+Playlist* PlaylistRepository::search(int id) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM playlists WHERE id = ?");
+    query.addBindValue(id);
+    if (query.exec() && query.next()) {
+        return new Playlist(query.value(0).toInt(), query.value(1).toString(),
+                            query.value(2).toInt());
+    }
+    return nullptr;
+}
+
+void PlaylistRepository::insertSong(int playlistId, int songId) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO playlist_songs (playlistId, songId) VALUES (?, ?)");
+    query.addBindValue(playlistId);
+    query.addBindValue(songId);
+    query.exec();
+}
+
+void PlaylistRepository::removeSong(int playlistId, int songId) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM playlist_songs WHERE playlistId = ? AND songId = ?");
+    query.addBindValue(playlistId);
+    query.addBindValue(songId);
+    query.exec();
+}
+
+QList<Playlist*> PlaylistRepository::playlists(int listenerId) {
+    QList<Playlist*> result;
+    QSqlQuery query;
+    query.prepare("SELECT * FROM playlists WHERE listenerId = ?");
+    query.addBindValue(listenerId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Playlist(query.value(0).toInt(), query.value(1).toString(),
+                                       query.value(2).toInt()));
+        }
+    }
+    return result;
+}
 
 Account* ArtistRepository::save(Account* entity) {
     QSqlQuery query;

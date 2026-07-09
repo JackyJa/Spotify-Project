@@ -23,14 +23,6 @@ bool DatabaseManager::init() {
                "role TEXT, "
                "password TEXT)");
 
-    query.exec("CREATE TABLE IF NOT EXISTS accounts ("
-               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-               "fullName TEXT, "
-               "userName TEXT UNIQUE, "
-               "biography TEXT, "
-               "role TEXT, "
-               "password TEXT)");
-
     query.exec("CREATE TABLE IF NOT EXISTS albums ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "name TEXT, "
@@ -47,6 +39,14 @@ bool DatabaseManager::init() {
                "albumId INTEGER, "
                "coverPath TEXT)");
 
+    query.exec("CREATE TABLE IF NOT EXISTS playlists ("
+               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+               "name TEXT, "
+               "listenerId INTEGER)");
+
+    query.exec("CREATE TABLE IF NOT EXISTS playlist_songs ("
+               "playlistId INTEGER, "
+               "songId INTEGER)");
     return true;
 }
 

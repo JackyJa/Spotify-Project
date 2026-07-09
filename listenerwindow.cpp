@@ -4,6 +4,7 @@
 ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent)
     : QMainWindow(parent), currentListener(user), listenerRepo(lRepo), songRepo(sRepo) {
 
+    playlistRepo = new PlaylistRepository();
     setWindowTitle("Listener Dashboard - " + currentListener->getUserName());
     resize(500, 400);
     setupUI();
@@ -12,6 +13,7 @@ ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRep
 
 ListenerWindow::~ListenerWindow() {
     delete currentListener;
+    delete playlistRepo;
 }
 
 void ListenerWindow::setupUI() {
@@ -45,17 +47,23 @@ void ListenerWindow::setupUI() {
 void ListenerWindow::refreshPlaylists() {
     playlistsList->clear();
     playlistsList->addItem("Favorite Songs");
+
+    QList<Playlist*> myPlaylists = playlistRepo->playlists(currentListener->getId());
+    for (int i = 0; i < myPlaylists.size(); ++i) {
+        playlistsList->addItem(myPlaylists.at(i)->getName());
+    }
 }
+
 
 void ListenerWindow::createPlaylist() {
     bool ok;
     QString name = QInputDialog::getText(this, "Create Playlist", "Playlist Name:", QLineEdit::Normal, "", &ok);
     if (ok && !name.isEmpty()) {
-        QMessageBox::information(this, "Success", "Playlist created successfully.");
+        playlistRepo->save(new Playlist(0, name, currentListener->getId()));
+        QMessageBox::information(this, "Success", "Playlist created successfully in database.");
         refreshPlaylists();
     }
 }
-
 void ListenerWindow::viewArtists() {
     QMessageBox::information(this, "Info", "Here you will see a list of all artists.");
 }

@@ -13,8 +13,13 @@ private:
     QString profilePhotoPath;
 
 public:
-    Account(int accId, QString fn, QString un, QString bio, QString pass)
-        : id(accId), fullName(fn), userName(un), biography(bio), password(pass) {}
+    Account(int accId, QString fn, QString un, QString bio, QString pass){
+        id = accId;
+        fullName = fn;
+        userName = un;
+        biography = bio;
+        password = pass;
+    }
 
     virtual ~Account() {}
 
@@ -56,8 +61,15 @@ private:
     int albumId;
 
 public:
-    Song(int sId, QString n, int year, QString g, QString path, int aId, int alId)
-        : id(sId), name(n), releaseYear(year), genre(g), audioFilePath(path), artistId(aId), albumId(alId) {}
+    Song(int sId, QString n, int year, QString g, QString path, int aId, int alId) {
+        id = sId;
+        name = n;
+        releaseYear = year;
+        genre = g;
+        audioFilePath = path;
+        artistId = aId;
+        albumId = alId;
+    }
 
     int getId() const { return id; }
     QString getName() const { return name; }
@@ -74,8 +86,12 @@ private:
     QString coverPath;
 
 public:
-    Album(int aId, QString n, int artId, QString cover)
-        : id(aId), name(n), artistId(artId), coverPath(cover) {}
+    Album(int aId, QString n, int artId, QString cover) {
+        id = aId;
+        name = n;
+        artistId = artId;
+        coverPath = cover;
+    }
 
     int getId() const { return id; }
     QString getName() const { return name; }
@@ -90,7 +106,11 @@ private:
     QList<int> songIds;
 
 public:
-    Playlist(int pId, QString n, int lId) : id(pId), name(n), listenerId(lId) {}
+    Playlist(int pId, QString n, int lId) {
+        id = pId;
+        name = n;
+        listenerId = lId;
+    }
 
     int getId() const { return id; }
     QString getName() const { return name; }

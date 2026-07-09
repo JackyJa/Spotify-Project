@@ -16,6 +16,7 @@ private:
     Account* currentListener;
     ListenerRepository* listenerRepo;
     SongRepository* songRepo;
+    PlaylistRepository* playlistRepo;
 
     QWidget* centralWidget;
     QListWidget* playlistsList;
