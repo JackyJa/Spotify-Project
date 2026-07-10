@@ -1,4 +1,5 @@
 #include "listenerwindow.h"
+#include "repositories.h"
 #include <qlabel.h>
 #include <QRegularExpression>
 
@@ -65,8 +66,94 @@ void ListenerWindow::createPlaylist() {
         refreshPlaylists();
     }
 }
+
 void ListenerWindow::viewArtists() {
-    QMessageBox::information(this, "Info", "Here you will see a list of all artists.");
+    ArtistRepository tempArtistRepo;
+    QList<Account*> artists = tempArtistRepo.getAll();
+
+    if (artists.isEmpty()) {
+        QMessageBox::information(this, "Info", "No artists found.");
+        return;
+    }
+
+    QStringList artistNames;
+    for (int i = 0; i < artists.size(); ++i) {
+        artistNames << artists.at(i)->getFullName();
+    }
+
+    bool ok;
+    QString artistChoice = QInputDialog::getItem(this, "View Artists", "Select an Artist:", artistNames, 0, false, &ok);
+    if (!ok) {
+        for (int i = 0; i < artists.size(); ++i) delete artists.at(i);
+        return;
+    }
+
+    int artistId = -1;
+    for (int i = 0; i < artists.size(); ++i) {
+        if (artists.at(i)->getFullName() == artistChoice) {
+            artistId = artists.at(i)->getId();
+        }
+        delete artists.at(i);
+    }
+
+    if (artistId == -1) return;
+
+    QList<Song*> songs = songRepo->getByArtist(artistId);
+    if (songs.isEmpty()) {
+        QMessageBox::information(this, "Info", "This artist has no songs yet.");
+        return;
+    }
+
+    QStringList songNames;
+    for (int i = 0; i < songs.size(); ++i) {
+        songNames << songs.at(i)->getName();
+    }
+
+    QString songChoice = QInputDialog::getItem(this, "Select Song", "Select a song to add to your playlist:", songNames, 0, false, &ok);
+    if (!ok) {
+        for (int i = 0; i < songs.size(); ++i) delete songs.at(i);
+        return;
+    }
+
+    int songId = -1;
+    for (int i = 0; i < songs.size(); ++i) {
+        if (songs.at(i)->getName() == songChoice) {
+            songId = songs.at(i)->getId();
+        }
+        delete songs.at(i);
+    }
+
+    if (songId == -1) return;
+
+    QList<Playlist*> playlists = playlistRepo->playlists(currentListener->getId());
+    if (playlists.isEmpty()) {
+        QMessageBox::warning(this, "Error", "You have no playlists. Please create one first.");
+        return;
+    }
+
+    QStringList playlistNames;
+    for (int i = 0; i < playlists.size(); ++i) {
+        playlistNames << playlists.at(i)->getName();
+    }
+
+    QString playlistChoice = QInputDialog::getItem(this, "Select Playlist", "Add to which playlist?", playlistNames, 0, false, &ok);
+    if (!ok) {
+        for (int i = 0; i < playlists.size(); ++i) delete playlists.at(i);
+        return;
+    }
+
+    int playlistId = -1;
+    for (int i = 0; i < playlists.size(); ++i) {
+        if (playlists.at(i)->getName() == playlistChoice) {
+            playlistId = playlists.at(i)->getId();
+        }
+        delete playlists.at(i);
+    }
+
+    if (playlistId != -1) {
+        playlistRepo->insertSong(playlistId, songId);
+        QMessageBox::information(this, "Success", "Song added to playlist successfully!");
+    }
 }
 
 void ListenerWindow::editAccount() {
