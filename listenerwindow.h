@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 #include "entities.h"
 #include "repositories.h"
 
@@ -24,11 +26,15 @@ private:
     QPushButton* btnViewArtists;
     QPushButton* btnEditAccount;
     QPushButton* btnDeleteAccount;
+    QMediaPlayer* player;
+    QAudioOutput* audioOutput;
+    QPushButton* btnPlayFromPlaylist;
 
     void setupUI();
     void refreshPlaylists();
 
 private slots:
+    void playFromPlaylist();
     void createPlaylist();
     void viewArtists();
     void editAccount();

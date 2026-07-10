@@ -78,6 +78,7 @@ public:
     int getArtistId() const { return artistId; }
     int getAlbumId() const { return albumId; }
     void setName(QString n) { name = n; }
+    QString getAudioFilePath() const { return audioFilePath; }
 };
 
 class Album {

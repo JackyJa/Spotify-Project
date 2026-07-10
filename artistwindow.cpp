@@ -2,6 +2,7 @@
 #include "repositories.h"
 #include <QLabel>
 #include <QRegularExpression>
+#include <QFileDialog>
 
 ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent)
     : QMainWindow(parent), currentArtist(user), artistRepo(aRepo), songRepo(sRepo) {
@@ -76,22 +77,25 @@ void ArtistWindow::addSong() {
 
     bool ok;
     QString choice = QInputDialog::getItem(this, "Add Song", "Select Album:", items, 0, false, &ok);
-    if (ok) {
-        QString name = QInputDialog::getText(this, "Add Song", "Song Name:", QLineEdit::Normal, "", &ok);
-        if (ok && !name.isEmpty()) {
-            int selectedAlbumId = 0;
-            if (choice != "Singles (No Album)") {
-                for (int i = 0; i < myAlbums.size(); ++i) {
-                    if (myAlbums.at(i)->getName() == choice) {
-                        selectedAlbumId = myAlbums.at(i)->getId();
-                        break;
-                    }
-                }
+    if (!ok) return;
+
+    QString name = QInputDialog::getText(this, "Add Song", "Song Name:", QLineEdit::Normal, "", &ok);
+    if (!ok || name.isEmpty()) return;
+
+    QString filePath = QFileDialog::getOpenFileName(this, "Select Audio File", "", "Audio Files (*.mp3 *.wav)");
+    if (filePath.isEmpty()) return;
+
+    int selectedAlbumId = 0;
+    if (choice != "Singles (No Album)") {
+        for (int i = 0; i < myAlbums.size(); ++i) {
+            if (myAlbums.at(i)->getName() == choice) {
+                selectedAlbumId = myAlbums.at(i)->getId();
+                break;
             }
-            songRepo->save(new Song(0, name, 0, "", "", currentArtist->getId(), selectedAlbumId));
-            QMessageBox::information(this, "Success", "Song added successfully in database.");
         }
     }
+    songRepo->save(new Song(0, name, 0, "", filePath, currentArtist->getId(), selectedAlbumId));
+    QMessageBox::information(this, "Success", "Song added successfully in database.");
 }
 
 void ArtistWindow::editAccount() {

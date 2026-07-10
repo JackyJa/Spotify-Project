@@ -23,7 +23,7 @@ Song* SongRepository::save(Song* entity) {
     query.addBindValue(entity->getName());
     query.addBindValue(0);
     query.addBindValue("");
-    query.addBindValue("");
+    query.addBindValue(entity->getAudioFilePath());
     query.addBindValue(entity->getArtistId());
     query.addBindValue(entity->getAlbumId());
     query.addBindValue("");
@@ -92,6 +92,22 @@ QList<Song*> SongRepository::getByArtist(int artistId) {
     QSqlQuery query;
     query.prepare("SELECT * FROM songs WHERE artistId = ?");
     query.addBindValue(artistId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt(), query.value(3).toString(),
+                                   query.value(4).toString(), query.value(5).toInt(),
+                                   query.value(6).toInt()));
+        }
+    }
+    return result;
+}
+
+QList<Song*> SongRepository::getByPlaylist(int playlistId) {
+    QList<Song*> result;
+    QSqlQuery query;
+    query.prepare("SELECT s.* FROM songs s JOIN playlist_songs ps ON s.id = ps.songId WHERE ps.playlistId = ?");
+    query.addBindValue(playlistId);
     if (query.exec()) {
         while (query.next()) {
             result.append(new Song(query.value(0).toInt(), query.value(1).toString(),

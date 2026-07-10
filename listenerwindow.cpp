@@ -2,11 +2,23 @@
 #include "repositories.h"
 #include <qlabel.h>
 #include <QRegularExpression>
+#include <QFile>
+#include <QDebug>
 
 ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent)
     : QMainWindow(parent), currentListener(user), listenerRepo(lRepo), songRepo(sRepo) {
 
     playlistRepo = new PlaylistRepository();
+    player = new QMediaPlayer(this);
+    audioOutput = new QAudioOutput(this);
+    player->setAudioOutput(audioOutput);
+    audioOutput->setVolume(0.8);
+    connect(player, &QMediaPlayer::errorOccurred, this, [](QMediaPlayer::Error error, const QString &errorString) {
+        if (error != QMediaPlayer::NoError) {
+            QMessageBox::critical(nullptr, "Media Player Error", "Could not play audio.\nError: " + errorString);
+            qDebug() << "Media Error:" << errorString;
+        }
+    });
     setWindowTitle("Listener Dashboard - " + currentListener->getUserName());
     resize(500, 400);
     setupUI();
@@ -16,6 +28,8 @@ ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRep
 ListenerWindow::~ListenerWindow() {
     delete currentListener;
     delete playlistRepo;
+    delete player;
+    delete audioOutput;
 }
 
 void ListenerWindow::setupUI() {
@@ -37,6 +51,9 @@ void ListenerWindow::setupUI() {
     layout->addWidget(btnViewArtists);
     layout->addWidget(btnEditAccount);
     layout->addWidget(btnDeleteAccount);
+    btnPlayFromPlaylist = new QPushButton("Play Song from Playlist", centralWidget);
+    layout->addWidget(btnPlayFromPlaylist);
+    connect(btnPlayFromPlaylist, &QPushButton::clicked, this, &ListenerWindow::playFromPlaylist);
 
     setCentralWidget(centralWidget);
 
@@ -188,6 +205,68 @@ void ListenerWindow::editAccount() {
 
     listenerRepo->update(currentListener);
     QMessageBox::information(this, "Success", "Account updated in database.");
+}
+
+void ListenerWindow::playFromPlaylist() {
+    QList<Playlist*> myPlaylists = playlistRepo->playlists(currentListener->getId());
+    if (myPlaylists.isEmpty()) {
+        QMessageBox::warning(this, "Error", "You have no playlists.");
+        return;
+    }
+
+    QStringList plNames;
+    for (int i = 0; i < myPlaylists.size(); ++i) plNames << myPlaylists.at(i)->getName();
+
+    bool ok;
+    QString plChoice = QInputDialog::getItem(this, "Play Music", "Select Playlist:", plNames, 0, false, &ok);
+    if (!ok) {
+        for (int i = 0; i < myPlaylists.size(); ++i) delete myPlaylists.at(i);
+        return;
+    }
+
+    int plId = -1;
+    for (int i = 0; i < myPlaylists.size(); ++i) {
+        if (myPlaylists.at(i)->getName() == plChoice) plId = myPlaylists.at(i)->getId();
+        delete myPlaylists.at(i);
+    }
+
+    if (plId == -1) return;
+
+    QList<Song*> songs = songRepo->getByPlaylist(plId);
+    if (songs.isEmpty()) {
+        QMessageBox::information(this, "Info", "This playlist is empty.");
+        return;
+    }
+
+    QStringList songNames;
+    for (int i = 0; i < songs.size(); ++i) songNames << songs.at(i)->getName();
+
+    QString songChoice = QInputDialog::getItem(this, "Play Music", "Select Song:", songNames, 0, false, &ok);
+    if (!ok) {
+        for (int i = 0; i < songs.size(); ++i) delete songs.at(i);
+        return;
+    }
+
+    for (int i = 0; i < songs.size(); ++i) {
+        if (songs.at(i)->getName() == songChoice) {
+
+            for (int i = 0; i < songs.size(); ++i) {
+                if (songs.at(i)->getName() == songChoice) {
+                    QString path = songs.at(i)->getAudioFilePath();
+
+                    if (!QFile::exists(path)) {
+                        QMessageBox::warning(this, "Error", "Audio file not found on disk:\n" + path);
+                        return;
+                    }
+
+                    player->setSource(QUrl::fromLocalFile(path));
+                    player->play();
+                    QMessageBox::information(this, "Now Playing", "Playing: " + songs.at(i)->getName());
+                }
+                delete songs.at(i);
+            }
+        }
+    }
 }
 
 void ListenerWindow::deleteAccount() {

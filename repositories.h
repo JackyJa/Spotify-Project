@@ -23,6 +23,7 @@ public:
     QList<Song*> singleSongs(int artistId);
     QList<Song*> getByAlbum(int albumId);
     QList<Song*> getByArtist(int artistId);
+    QList<Song*> getByPlaylist(int playlistId);
 };
 
 class PlaylistRepository : public AbstractRepository<Playlist> {
