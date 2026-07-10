@@ -119,6 +119,32 @@ QList<Song*> SongRepository::getByPlaylist(int playlistId) {
     return result;
 }
 
+QList<Song*> SongRepository::searchSongs(QString name, QString genre, int year) {
+    QList<Song*> result;
+    QSqlQuery query;
+    QString queryStr = "SELECT * FROM songs WHERE 1=1";
+
+    if (!name.isEmpty()) queryStr += " AND name LIKE ?";
+    if (!genre.isEmpty()) queryStr += " AND genre LIKE ?";
+    if (year != 0) queryStr += " AND releaseYear = ?";
+
+    query.prepare(queryStr);
+
+    if (!name.isEmpty()) query.addBindValue("%" + name + "%");
+    if (!genre.isEmpty()) query.addBindValue("%" + genre + "%");
+    if (year != 0) query.addBindValue(year);
+
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt(), query.value(3).toString(),
+                                   query.value(4).toString(), query.value(5).toInt(),
+                                   query.value(6).toInt()));
+        }
+    }
+    return result;
+}
+
 QList<Playlist*> PlaylistRepository::getAll() {
     QList<Playlist*> result;
     QSqlQuery query("SELECT * FROM playlists");
@@ -332,8 +358,28 @@ bool ListenerRepository::update(Account* entity) {
     return query.exec();
 }
 
-void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {}
-bool ListenerRepository::isLiked(int listenerId, int songId) { return false; }
+void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {
+    QSqlQuery query;
+    if (isLiked) {
+        query.prepare("INSERT INTO likes (listenerId, songId) VALUES (?, ?)");
+    } else {
+        query.prepare("DELETE FROM likes WHERE listenerId = ? AND songId = ?");
+    }
+    query.addBindValue(listenerId);
+    query.addBindValue(songId);
+    query.exec();
+}
+
+bool ListenerRepository::isLiked(int listenerId, int songId) {
+    QSqlQuery query;
+    query.prepare("SELECT * FROM likes WHERE listenerId = ? AND songId = ?");
+    query.addBindValue(listenerId);
+    query.addBindValue(songId);
+    if (query.exec() && query.next()) {
+        return true;
+    }
+    return false;
+}
 
 
 Album* AlbumRepository::save(Album* entity) {

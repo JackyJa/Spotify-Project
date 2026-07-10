@@ -24,6 +24,7 @@ public:
     QList<Song*> getByAlbum(int albumId);
     QList<Song*> getByArtist(int artistId);
     QList<Song*> getByPlaylist(int playlistId);
+    QList<Song*> searchSongs(QString name, QString genre, int year);
 };
 
 class PlaylistRepository : public AbstractRepository<Playlist> {

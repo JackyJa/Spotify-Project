@@ -47,6 +47,11 @@ bool DatabaseManager::init() {
     query.exec("CREATE TABLE IF NOT EXISTS playlist_songs ("
                "playlistId INTEGER, "
                "songId INTEGER)");
+
+    query.exec("CREATE TABLE IF NOT EXISTS likes ("
+               "listenerId INTEGER, "
+               "songId INTEGER)");
+
     return true;
 }
 

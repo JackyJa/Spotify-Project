@@ -29,6 +29,8 @@ private:
     QMediaPlayer* player;
     QAudioOutput* audioOutput;
     QPushButton* btnPlayFromPlaylist;
+    QPushButton* btnSearchSongs;
+    QPushButton* btnLikeSong;
 
     void setupUI();
     void refreshPlaylists();
@@ -39,6 +41,8 @@ private slots:
     void viewArtists();
     void editAccount();
     void deleteAccount();
+    void searchSongs();
+    void likeSong();
 
 public:
     ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent = nullptr);

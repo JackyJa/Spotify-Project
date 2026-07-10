@@ -4,6 +4,7 @@
 #include <QRegularExpression>
 #include <QFile>
 #include <QDebug>
+#include <QInputDialog>
 
 ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent)
     : QMainWindow(parent), currentListener(user), listenerRepo(lRepo), songRepo(sRepo) {
@@ -54,6 +55,13 @@ void ListenerWindow::setupUI() {
     btnPlayFromPlaylist = new QPushButton("Play Song from Playlist", centralWidget);
     layout->addWidget(btnPlayFromPlaylist);
     connect(btnPlayFromPlaylist, &QPushButton::clicked, this, &ListenerWindow::playFromPlaylist);
+    btnSearchSongs = new QPushButton("Search & Filter Songs", centralWidget);
+    btnLikeSong = new QPushButton("Like a Song", centralWidget);
+    layout->addWidget(btnSearchSongs);
+    layout->addWidget(btnLikeSong);
+
+    connect(btnSearchSongs, &QPushButton::clicked, this, &ListenerWindow::searchSongs);
+    connect(btnLikeSong, &QPushButton::clicked, this, &ListenerWindow::likeSong);
 
     setCentralWidget(centralWidget);
 
@@ -275,5 +283,62 @@ void ListenerWindow::deleteAccount() {
     if (reply == QMessageBox::Yes) {
         listenerRepo->remove(currentListener->getId());
         this->close();
+    }
+}
+
+void ListenerWindow::searchSongs() {
+    bool ok;
+    QString name = QInputDialog::getText(this, "Search", "Song Name (leave empty for any):", QLineEdit::Normal, "", &ok);
+    if (!ok) return;
+
+    QString genre = QInputDialog::getText(this, "Search", "Genre (leave empty for any):", QLineEdit::Normal, "", &ok);
+    if (!ok) return;
+
+    QString yearStr = QInputDialog::getText(this, "Search", "Release Year (leave empty for any):", QLineEdit::Normal, "", &ok);
+    if (!ok) return;
+
+    int year = 0;
+    if (!yearStr.isEmpty()) year = yearStr.toInt();
+
+    QList<Song*> songs = songRepo->searchSongs(name, genre, year);
+    if (songs.isEmpty()) {
+        QMessageBox::information(this, "Result", "No songs found matching your criteria.");
+        return;
+    }
+
+    QStringList songNames;
+    for (int i = 0; i < songs.size(); ++i) {
+        songNames << songs.at(i)->getName() + " (" + QString::number(songs.at(i)->getReleaseYear()) + ")";
+    }
+
+    QInputDialog::getItem(this, "Search Results", "Found songs:", songNames, 0, false, &ok);
+    for (int i = 0; i < songs.size(); ++i) delete songs.at(i);
+}
+
+void ListenerWindow::likeSong() {
+    QList<Song*> allSongs = songRepo->getAll();
+    if (allSongs.isEmpty()) {
+        QMessageBox::information(this, "Info", "No songs available to like.");
+        return;
+    }
+
+    QStringList songNames;
+    for (int i = 0; i < allSongs.size(); ++i) {
+        songNames << allSongs.at(i)->getName();
+    }
+
+    bool ok;
+    QString choice = QInputDialog::getItem(this, "Like Song", "Select a song to like:", songNames, 0, false, &ok);
+    if (!ok) {
+        for (int i = 0; i < allSongs.size(); ++i) delete allSongs.at(i);
+        return;
+    }
+
+    for (int i = 0; i < allSongs.size(); ++i) {
+        if (allSongs.at(i)->getName() == choice) {
+            listenerRepo->updateLiked(currentListener->getId(), allSongs.at(i)->getId(), true);
+            QMessageBox::information(this, "Success", "Song added to your Favorite Songs!");
+        }
+        delete allSongs.at(i);
     }
 }
