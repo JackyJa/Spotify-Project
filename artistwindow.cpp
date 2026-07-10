@@ -1,6 +1,7 @@
 #include "artistwindow.h"
 #include "repositories.h"
 #include <QLabel>
+#include <QRegularExpression>
 
 ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent)
     : QMainWindow(parent), currentArtist(user), artistRepo(aRepo), songRepo(sRepo) {
@@ -95,11 +96,36 @@ void ArtistWindow::addSong() {
 
 void ArtistWindow::editAccount() {
     bool ok;
-    QString newPass = QInputDialog::getText(this, "Edit Account", "New Password:", QLineEdit::Password, "", &ok);
-    if (ok && !newPass.isEmpty()) {
-        currentArtist->setPassword(newPass);
-        QMessageBox::information(this, "Success", "Account updated.");
+    QString fullName = QInputDialog::getText(this, "Edit Account", "Full Name:", QLineEdit::Normal, currentArtist->getFullName(), &ok);
+    if (!ok || fullName.isEmpty()) return;
+
+    QString userName = QInputDialog::getText(this, "Edit Account", "Username:", QLineEdit::Normal, currentArtist->getUserName(), &ok);
+    if (!ok || userName.isEmpty()) return;
+
+    QString password = QInputDialog::getText(this, "Edit Account", "New Password:", QLineEdit::Password, "", &ok);
+    if (!ok || password.isEmpty()) return;
+
+    QRegularExpression strongRegex("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{12,}");
+    QRegularExpression mediumRegex("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*]).{6,}");
+
+    QString strength;
+    if (strongRegex.match(password).hasMatch()) strength = "Strong";
+    else if (mediumRegex.match(password).hasMatch()) strength = "Medium";
+    else strength = "Weak";
+
+    QMessageBox::information(this, "Password Strength", "Your password strength is: " + strength);
+
+    if (strength == "Weak") {
+        QMessageBox::warning(this, "Error", "Password is too weak. Please use at least 6 chars with upper/lower case and numbers.");
+        return;
     }
+
+    currentArtist->setFullName(fullName);
+    currentArtist->setUserName(userName);
+    currentArtist->setPassword(password);
+
+    artistRepo->update(currentArtist);
+    QMessageBox::information(this, "Success", "Account updated in database.");
 }
 
 void ArtistWindow::deleteAccount() {

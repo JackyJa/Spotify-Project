@@ -45,6 +45,7 @@ class ArtistRepository : public AccountRepository {
 public:
     Account* save(Account* entity) override;
     bool remove(int id) override;
+    bool update(Account* entity);
     Account* search(int id) override;
     QList<Account*> getAll() override;
     Account* searchByUserName(QString userName) override;
@@ -54,6 +55,7 @@ class ListenerRepository : public AccountRepository {
 public:
     Account* save(Account* entity) override;
     bool remove(int id) override;
+    bool update(Account* entity);
     Account* search(int id) override;
     QList<Account*> getAll() override;
     Account* searchByUserName(QString userName) override;

@@ -29,8 +29,10 @@ public:
     QString getBiography() const { return biography; }
     QString getPassword() const { return password; }
 
+    void setFullName(QString fn) { fullName = fn; }
     void setUserName(QString un) { userName = un; }
     void setPassword(QString pass) { password = pass; }
+
     virtual QString getRole() const = 0;
 };
 

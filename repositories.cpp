@@ -237,6 +237,16 @@ Account* ArtistRepository::searchByUserName(QString userName) {
     return nullptr;
 }
 
+bool ArtistRepository::update(Account* entity) {
+    QSqlQuery query;
+    query.prepare("UPDATE accounts SET fullName=?, userName=?, password=? WHERE id=? AND role='Artist'");
+    query.addBindValue(entity->getFullName());
+    query.addBindValue(entity->getUserName());
+    query.addBindValue(entity->getPassword());
+    query.addBindValue(entity->getId());
+    return query.exec();
+}
+
 Account* ListenerRepository::save(Account* entity) {
     QSqlQuery query;
     query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password) "
@@ -294,6 +304,16 @@ Account* ListenerRepository::searchByUserName(QString userName) {
                             query.value(5).toString());
     }
     return nullptr;
+}
+
+bool ListenerRepository::update(Account* entity) {
+    QSqlQuery query;
+    query.prepare("UPDATE accounts SET fullName=?, userName=?, password=? WHERE id=? AND role='Listener'");
+    query.addBindValue(entity->getFullName());
+    query.addBindValue(entity->getUserName());
+    query.addBindValue(entity->getPassword());
+    query.addBindValue(entity->getId());
+    return query.exec();
 }
 
 void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {}
