@@ -5,8 +5,10 @@
 #include <QFileDialog>
 
 ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent)
-    : QMainWindow(parent), currentArtist(user), artistRepo(aRepo), songRepo(sRepo) {
-
+    : QMainWindow(parent) {
+    currentArtist = user;
+    artistRepo = aRepo;
+    songRepo = sRepo;
     albumRepo = new AlbumRepository();
     setWindowTitle("Artist Dashboard - " + currentArtist->getUserName());
     resize(500, 400);
@@ -52,8 +54,8 @@ void ArtistWindow::refreshAlbums() {
     albumsList->addItem("Singles");
 
     QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
-    for (int i = 0; i < myAlbums.size(); ++i) {
-        albumsList->addItem(myAlbums.at(i)->getName());
+    for (int i = 0; i < myAlbums.size(); i++) {
+        albumsList->addItem(myAlbums[i]->getName());
     }
 }
 
@@ -71,8 +73,8 @@ void ArtistWindow::addSong() {
     QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
     QStringList items;
     items << "Singles (No Album)";
-    for (int i = 0; i < myAlbums.size(); ++i) {
-        items << myAlbums.at(i)->getName();
+    for (int i = 0; i < myAlbums.size(); i++) {
+        items << myAlbums[i]->getName();
     }
 
     bool ok;
@@ -87,9 +89,9 @@ void ArtistWindow::addSong() {
 
     int selectedAlbumId = 0;
     if (choice != "Singles (No Album)") {
-        for (int i = 0; i < myAlbums.size(); ++i) {
+        for (int i = 0; i < myAlbums.size(); i++) {
             if (myAlbums.at(i)->getName() == choice) {
-                selectedAlbumId = myAlbums.at(i)->getId();
+                selectedAlbumId = myAlbums[i]->getId();
                 break;
             }
         }

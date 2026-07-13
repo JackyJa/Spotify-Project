@@ -10,6 +10,7 @@
 #include <QAudioOutput>
 #include "entities.h"
 #include "repositories.h"
+#include "chatbotwindow.h"
 
 class ListenerWindow : public QMainWindow {
     Q_OBJECT
@@ -31,6 +32,7 @@ private:
     QPushButton* btnPlayFromPlaylist;
     QPushButton* btnSearchSongs;
     QPushButton* btnLikeSong;
+    QPushButton* btnOpenChatbot;
 
     void setupUI();
     void refreshPlaylists();
@@ -43,6 +45,7 @@ private slots:
     void deleteAccount();
     void searchSongs();
     void likeSong();
+    void openChatbot();
 
 public:
     ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent = nullptr);

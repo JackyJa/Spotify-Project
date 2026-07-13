@@ -44,6 +44,9 @@ void ListenerWindow::setupUI() {
     btnViewArtists = new QPushButton("View Artists & Albums", centralWidget);
     btnEditAccount = new QPushButton("Edit Account", centralWidget);
     btnDeleteAccount = new QPushButton("Delete Account", centralWidget);
+    btnOpenChatbot = new QPushButton("Ask AI Assistant", centralWidget);
+    layout->addWidget(btnOpenChatbot);
+    connect(btnOpenChatbot, &QPushButton::clicked, this, &ListenerWindow::openChatbot);
 
     layout->addWidget(welcomeLabel);
     layout->addWidget(new QLabel("Your Playlists:"));
@@ -341,4 +344,10 @@ void ListenerWindow::likeSong() {
         }
         delete allSongs.at(i);
     }
+}
+
+void ListenerWindow::openChatbot() {
+    ChatbotWindow* chat = new ChatbotWindow();
+    chat->setAttribute(Qt::WA_DeleteOnClose);
+    chat->show();
 }

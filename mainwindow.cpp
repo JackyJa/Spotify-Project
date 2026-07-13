@@ -68,7 +68,8 @@ void MainWindow::attemptLogin() {
         } else {
             QMessageBox::warning(this, "Error", "Incorrect Password.");
         }
-    } else if (foundListener) {
+    }
+    else if (foundListener) {
         if (foundListener->getPassword() == pass) {
             this->hide();
             ListenerWindow* lw = new ListenerWindow(foundListener, listenerRepo, songRepo);
@@ -76,7 +77,8 @@ void MainWindow::attemptLogin() {
         } else {
             QMessageBox::warning(this, "Error", "Incorrect Password.");
         }
-    } else {
+    }
+    else {
         QMessageBox::warning(this, "Error", "User not found.");
     }
 }
