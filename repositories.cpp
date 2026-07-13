@@ -22,8 +22,8 @@ Song* SongRepository::save(Song* entity) {
     query.prepare("INSERT INTO songs (name, releaseYear, genre, audioFilePath, artistId, albumId, coverPath) "
                   "VALUES (?, ?, ?, ?, ?, ?, ?)");
     query.addBindValue(entity->getName());
-    query.addBindValue(0);
-    query.addBindValue("");
+    query.addBindValue(entity->getReleaseYear());
+    query.addBindValue(entity->getGenre());
     query.addBindValue(entity->getAudioFilePath());
     query.addBindValue(entity->getArtistId());
     query.addBindValue(entity->getAlbumId());

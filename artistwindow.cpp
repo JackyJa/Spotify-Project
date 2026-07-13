@@ -64,7 +64,6 @@ void ArtistWindow::addAlbum() {
     QString name = QInputDialog::getText(this, "Add Album", "Album Name:", QLineEdit::Normal, "", &ok);
     if (!ok || name.isEmpty()) return;
 
-
     QString coverPath = QFileDialog::getOpenFileName(this, "Select Album Cover", "", "Image Files (*.jpg *.png *.jpeg)");
     if (coverPath.isEmpty()) {
         QMessageBox::warning(this, "Error", "Album cover is required.");
@@ -80,8 +79,8 @@ void ArtistWindow::addSong() {
     QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
     QStringList items;
     items << "Singles (No Album)";
-    for (int i = 0; i < myAlbums.size(); i++) {
-        items << myAlbums[i]->getName();
+    for (int i = 0; i < myAlbums.size(); ++i) {
+        items << myAlbums.at(i)->getName();
     }
 
     bool ok;
@@ -91,22 +90,29 @@ void ArtistWindow::addSong() {
     QString name = QInputDialog::getText(this, "Add Song", "Song Name:", QLineEdit::Normal, "", &ok);
     if (!ok || name.isEmpty()) return;
 
+    QString yearStr = QInputDialog::getText(this, "Add Song", "Release Year (e.g. 2023):", QLineEdit::Normal, "", &ok);
+    if (!ok || yearStr.isEmpty()) return;
+    int year = yearStr.toInt();
+
+    QString genre = QInputDialog::getText(this, "Add Song", "Genre (e.g. Pop, Rock):", QLineEdit::Normal, "", &ok);
+    if (!ok || genre.isEmpty()) return;
+
     QString filePath = QFileDialog::getOpenFileName(this, "Select Audio File", "", "Audio Files (*.mp3 *.wav)");
     if (filePath.isEmpty()) return;
 
     int selectedAlbumId = 0;
     if (choice != "Singles (No Album)") {
-        for (int i = 0; i < myAlbums.size(); i++) {
+        for (int i = 0; i < myAlbums.size(); ++i) {
             if (myAlbums.at(i)->getName() == choice) {
-                selectedAlbumId = myAlbums[i]->getId();
+                selectedAlbumId = myAlbums.at(i)->getId();
                 break;
             }
         }
     }
-    songRepo->save(new Song(0, name, 0, "", filePath, currentArtist->getId(), selectedAlbumId));
+
+    songRepo->save(new Song(0, name, year, genre, filePath, currentArtist->getId(), selectedAlbumId));
     QMessageBox::information(this, "Success", "Song added successfully in database.");
 }
-
 void ArtistWindow::editAccount() {
     bool ok;
     QString fullName = QInputDialog::getText(this, "Edit Account", "Full Name:", QLineEdit::Normal, currentArtist->getFullName(), &ok);
