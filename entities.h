@@ -102,6 +102,7 @@ public:
     int getId() const { return id; }
     QString getName() const { return name; }
     int getArtistId() const { return artistId; }
+    QString getCoverPath() const { return coverPath; }
 };
 
 class Playlist {

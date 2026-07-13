@@ -62,11 +62,18 @@ void ArtistWindow::refreshAlbums() {
 void ArtistWindow::addAlbum() {
     bool ok;
     QString name = QInputDialog::getText(this, "Add Album", "Album Name:", QLineEdit::Normal, "", &ok);
-    if (ok && !name.isEmpty()) {
-        albumRepo->save(new Album(0, name, currentArtist->getId(), ""));
-        QMessageBox::information(this, "Success", "Album created successfully in database.");
-        refreshAlbums();
+    if (!ok || name.isEmpty()) return;
+
+
+    QString coverPath = QFileDialog::getOpenFileName(this, "Select Album Cover", "", "Image Files (*.jpg *.png *.jpeg)");
+    if (coverPath.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Album cover is required.");
+        return;
     }
+
+    albumRepo->save(new Album(0, name, currentArtist->getId(), coverPath));
+    QMessageBox::information(this, "Success", "Album created successfully in database.");
+    refreshAlbums();
 }
 
 void ArtistWindow::addSong() {

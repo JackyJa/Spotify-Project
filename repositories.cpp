@@ -400,7 +400,7 @@ Album* AlbumRepository::save(Album* entity) {
     query.prepare("INSERT INTO albums (name, artistId, coverPath) VALUES (?, ?, ?)");
     query.addBindValue(entity->getName());
     query.addBindValue(entity->getArtistId());
-    query.addBindValue("");
+    query.addBindValue(entity->getCoverPath());
 
     if (query.exec()) {
         delete entity;
