@@ -2,6 +2,7 @@
 #include "artistwindow.h"
 #include "listenerwindow.h"
 #include "entities.h"
+#include <QRegularExpression>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     artistRepo = new ArtistRepository();
@@ -94,11 +95,48 @@ void MainWindow::attemptRegister() {
     QString fullName = QInputDialog::getText(this, "Register", "Full Name:", QLineEdit::Normal, "", &ok);
     if (!ok || fullName.isEmpty()) return;
 
-    QString userName = QInputDialog::getText(this, "Register", "Username:", QLineEdit::Normal, "", &ok);
-    if (!ok || userName.isEmpty()) return;
 
-    QString password = QInputDialog::getText(this, "Register", "Password:", QLineEdit::Password, "", &ok);
-    if (!ok || password.isEmpty()) return;
+    QString userName;
+    while (true) {
+        userName = QInputDialog::getText(this, "Register", "Choose a Username:", QLineEdit::Normal, "", &ok);
+        if (!ok || userName.isEmpty()) return;
+
+        Account* existingArtist = artistRepo->searchByUserName(userName);
+        Account* existingListener = listenerRepo->searchByUserName(userName);
+
+
+        if (existingArtist) delete existingArtist;
+        if (existingListener) delete existingListener;
+
+        if (existingArtist || existingListener) {
+            QMessageBox::warning(this, "Error", "Username is already taken. Please choose another one.");
+        } else {
+            break;
+        }
+    }
+
+
+    QString password;
+    QRegularExpression strongRegex("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{12,}");
+    QRegularExpression mediumRegex("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*]).{6,}");
+
+    while (true) {
+        password = QInputDialog::getText(this, "Register", "Choose a Password:", QLineEdit::Password, "", &ok);
+        if (!ok || password.isEmpty()) return;
+
+        QString strength;
+        if (strongRegex.match(password).hasMatch()) strength = "Strong";
+        else if (mediumRegex.match(password).hasMatch()) strength = "Medium";
+        else strength = "Weak";
+
+        if (strength == "Weak") {
+            QMessageBox::warning(this, "Weak Password", "Password is too weak!\nUse at least 6 chars with upper/lower case and numbers.");
+        } else {
+            QMessageBox::information(this, "Password Strength", "Your password strength is: " + strength);
+            break;
+        }
+    }
+
 
     if (role == "Artist") {
         artistRepo->save(new Artist(0, fullName, userName, "New Artist", password));
