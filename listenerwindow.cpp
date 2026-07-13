@@ -192,6 +192,9 @@ void ListenerWindow::editAccount() {
     QString userName = QInputDialog::getText(this, "Edit Account", "Username:", QLineEdit::Normal, currentListener->getUserName(), &ok);
     if (!ok || userName.isEmpty()) return;
 
+    QString bio = QInputDialog::getText(this, "Edit Account", "Biography:", QLineEdit::Normal, currentListener->getBiography(), &ok);
+    if (!ok || bio.isEmpty()) return;
+
     QString password = QInputDialog::getText(this, "Edit Account", "New Password:", QLineEdit::Password, "", &ok);
     if (!ok || password.isEmpty()) return;
 
@@ -212,10 +215,15 @@ void ListenerWindow::editAccount() {
 
     currentListener->setFullName(fullName);
     currentListener->setUserName(userName);
+    currentListener->setBiography(bio);
     currentListener->setPassword(password);
 
-    listenerRepo->update(currentListener);
-    QMessageBox::information(this, "Success", "Account updated in database.");
+    bool success = listenerRepo->update(currentListener);
+    if (success) {
+        QMessageBox::information(this, "Success", "Account updated in database.");
+    } else {
+        QMessageBox::warning(this, "Error", "Failed to update account in database.");
+    }
 }
 
 void ListenerWindow::playFromPlaylist() {

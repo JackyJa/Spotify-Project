@@ -32,6 +32,7 @@ public:
     void setFullName(QString fn) { fullName = fn; }
     void setUserName(QString un) { userName = un; }
     void setPassword(QString pass) { password = pass; }
+    void setBiography(QString bio) { biography = bio; }
 
     virtual QString getRole() const = 0;
 };

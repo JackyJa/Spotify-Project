@@ -96,6 +96,10 @@ void MainWindow::attemptRegister() {
     if (!ok || fullName.isEmpty()) return;
 
 
+    QString biography = QInputDialog::getText(this, "Register", "Biography:", QLineEdit::Normal, "", &ok);
+    if (!ok || biography.isEmpty()) return;
+
+
     QString userName;
     while (true) {
         userName = QInputDialog::getText(this, "Register", "Choose a Username:", QLineEdit::Normal, "", &ok);
@@ -139,9 +143,9 @@ void MainWindow::attemptRegister() {
 
 
     if (role == "Artist") {
-        artistRepo->save(new Artist(0, fullName, userName, "New Artist", password));
+        artistRepo->save(new Artist(0, fullName, userName, biography, password));
     } else {
-        listenerRepo->save(new Listener(0, fullName, userName, "New Listener", password));
+        listenerRepo->save(new Listener(0, fullName, userName, biography, password));
     }
 
     QMessageBox::information(this, "Success", "Registration successful! You can now log in.");

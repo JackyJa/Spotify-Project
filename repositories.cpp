@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <QDebug>
 
 QList<Song*> SongRepository::getAll() {
     QList<Song*> result;
@@ -281,12 +282,18 @@ Account* ArtistRepository::searchByUserName(QString userName) {
 
 bool ArtistRepository::update(Account* entity) {
     QSqlQuery query;
-    query.prepare("UPDATE accounts SET fullName=?, userName=?, password=? WHERE id=? AND role='Artist'");
+    query.prepare("UPDATE accounts SET fullName=?, userName=?, biography=?, password=? WHERE id=? AND role='Artist'");
     query.addBindValue(entity->getFullName());
     query.addBindValue(entity->getUserName());
+    query.addBindValue(entity->getBiography());
     query.addBindValue(entity->getPassword());
     query.addBindValue(entity->getId());
-    return query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Artist Update Error:" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 Account* ListenerRepository::save(Account* entity) {
@@ -350,12 +357,18 @@ Account* ListenerRepository::searchByUserName(QString userName) {
 
 bool ListenerRepository::update(Account* entity) {
     QSqlQuery query;
-    query.prepare("UPDATE accounts SET fullName=?, userName=?, password=? WHERE id=? AND role='Listener'");
+    query.prepare("UPDATE accounts SET fullName=?, userName=?, biography=?, password=? WHERE id=? AND role='Listener'");
     query.addBindValue(entity->getFullName());
     query.addBindValue(entity->getUserName());
+    query.addBindValue(entity->getBiography());
     query.addBindValue(entity->getPassword());
     query.addBindValue(entity->getId());
-    return query.exec();
+
+    if (!query.exec()) {
+        qDebug() << "Listener Update Error:" << query.lastError().text();
+        return false;
+    }
+    return true;
 }
 
 void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {

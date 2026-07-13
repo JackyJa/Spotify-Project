@@ -108,6 +108,9 @@ void ArtistWindow::editAccount() {
     QString userName = QInputDialog::getText(this, "Edit Account", "Username:", QLineEdit::Normal, currentArtist->getUserName(), &ok);
     if (!ok || userName.isEmpty()) return;
 
+    QString bio = QInputDialog::getText(this, "Edit Account", "Biography:", QLineEdit::Normal, currentArtist->getBiography(), &ok);
+    if (!ok || bio.isEmpty()) return;
+
     QString password = QInputDialog::getText(this, "Edit Account", "New Password:", QLineEdit::Password, "", &ok);
     if (!ok || password.isEmpty()) return;
 
@@ -128,10 +131,15 @@ void ArtistWindow::editAccount() {
 
     currentArtist->setFullName(fullName);
     currentArtist->setUserName(userName);
+    currentArtist->setBiography(bio);
     currentArtist->setPassword(password);
 
-    artistRepo->update(currentArtist);
-    QMessageBox::information(this, "Success", "Account updated in database.");
+    bool success = artistRepo->update(currentArtist);
+    if (success) {
+        QMessageBox::information(this, "Success", "Account updated in database.");
+    } else {
+        QMessageBox::warning(this, "Error", "Failed to update account in database.");
+    }
 }
 
 void ArtistWindow::deleteAccount() {
