@@ -1,5 +1,6 @@
 #include "artistwindow.h"
 #include "repositories.h"
+#include "albumdetails.h"
 #include <QLabel>
 #include <QRegularExpression>
 #include <QFileDialog>
@@ -47,6 +48,7 @@ void ArtistWindow::setupUI() {
     connect(btnAddSong, &QPushButton::clicked, this, &ArtistWindow::addSong);
     connect(btnEditAccount, &QPushButton::clicked, this, &ArtistWindow::editAccount);
     connect(btnDeleteAccount, &QPushButton::clicked, this, &ArtistWindow::deleteAccount);
+    connect(albumsList, &QListWidget::itemClicked, this, &ArtistWindow::viewAlbumSongs);
 }
 
 void ArtistWindow::refreshAlbums() {
@@ -100,19 +102,26 @@ void ArtistWindow::addSong() {
     QString filePath = QFileDialog::getOpenFileName(this, "Select Audio File", "", "Audio Files (*.mp3 *.wav)");
     if (filePath.isEmpty()) return;
 
+    QString coverPath = QFileDialog::getOpenFileName(this, "Select Song Cover", "", "Image Files (*.jpg *.png *.jpeg)");
+    if (coverPath.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Song cover is required.");
+        return;
+    }
+
     int selectedAlbumId = 0;
     if (choice != "Singles (No Album)") {
         for (int i = 0; i < myAlbums.size(); ++i) {
             if (myAlbums.at(i)->getName() == choice) {
-                selectedAlbumId = myAlbums.at(i)->getId();
+                selectedAlbumId = myAlbums[i]->getId();
                 break;
             }
         }
     }
 
-    songRepo->save(new Song(0, name, year, genre, filePath, currentArtist->getId(), selectedAlbumId));
+    songRepo->save(new Song(0, name, year, genre, filePath, currentArtist->getId(), selectedAlbumId, coverPath));
     QMessageBox::information(this, "Success", "Song added successfully in database.");
 }
+
 void ArtistWindow::editAccount() {
     bool ok;
     QString fullName = QInputDialog::getText(this, "Edit Account", "Full Name:", QLineEdit::Normal, currentArtist->getFullName(), &ok);
@@ -162,4 +171,25 @@ void ArtistWindow::deleteAccount() {
         artistRepo->remove(currentArtist->getId());
         this->close();
     }
+}
+
+void ArtistWindow::viewAlbumSongs(QListWidgetItem* item) {
+    QString selected = item->text();
+    int albumId = 0;
+
+    if (selected != "Singles") {
+        QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
+        for (int i = 0; i < myAlbums.size(); ++i) {
+            if (myAlbums.at(i)->getName() == selected) {
+                albumId = myAlbums.at(i)->getId();
+            }
+            delete myAlbums.at(i);
+        }
+        if (albumId == 0) return;
+    }
+
+
+    AlbumDetailsWindow* details = new AlbumDetailsWindow(albumId, currentArtist->getId(), songRepo);
+    details->setAttribute(Qt::WA_DeleteOnClose);
+    details->exec();
 }

@@ -33,6 +33,7 @@ private slots:
     void addSong();
     void editAccount();
     void deleteAccount();
+    void viewAlbumSongs(QListWidgetItem* item);
 
 public:
     ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent = nullptr);

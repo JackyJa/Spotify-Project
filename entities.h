@@ -62,9 +62,10 @@ private:
     QString audioFilePath;
     int artistId;
     int albumId;
+    QString coverPath;
 
 public:
-    Song(int sId, QString n, int year, QString g, QString path, int aId, int alId) {
+    Song(int sId, QString n, int year, QString g, QString path, int aId, int alId, QString cover = "") {
         id = sId;
         name = n;
         releaseYear = year;
@@ -72,6 +73,7 @@ public:
         audioFilePath = path;
         artistId = aId;
         albumId = alId;
+        coverPath = cover;
     }
 
     int getId() const { return id; }
@@ -82,6 +84,7 @@ public:
     int getReleaseYear() const { return releaseYear; }
     QString getGenre() const { return genre; }
     void setName(QString n) { name = n; }
+    QString getCoverPath() const { return coverPath; }
 };
 
 class Album {

@@ -12,7 +12,7 @@ QList<Song*> SongRepository::getAll() {
         result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
                                query.value(2).toInt(), query.value(3).toString(),
                                query.value(4).toString(), query.value(5).toInt(),
-                               query.value(6).toInt()));
+                               query.value(6).toInt(), query.value(7).toString()));
     }
     return result;
 }
@@ -27,7 +27,8 @@ Song* SongRepository::save(Song* entity) {
     query.addBindValue(entity->getAudioFilePath());
     query.addBindValue(entity->getArtistId());
     query.addBindValue(entity->getAlbumId());
-    query.addBindValue("");
+    query.addBindValue(entity->getCoverPath());
+
 
     if (query.exec()) {
         delete entity;
@@ -51,7 +52,7 @@ Song* SongRepository::search(int id) {
         return new Song(query.value(0).toInt(), query.value(1).toString(),
                         query.value(2).toInt(), query.value(3).toString(),
                         query.value(4).toString(), query.value(5).toInt(),
-                        query.value(6).toInt());
+                        query.value(6).toInt(), query.value(7).toString());
     }
     return nullptr;
 }
@@ -63,10 +64,11 @@ QList<Song*> SongRepository::singleSongs(int artistId) {
     query.addBindValue(artistId);
     if (query.exec()) {
         while (query.next()) {
+
             result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
                                    query.value(2).toInt(), query.value(3).toString(),
                                    query.value(4).toString(), query.value(5).toInt(),
-                                   query.value(6).toInt()));
+                                   query.value(6).toInt(), query.value(7).toString()));
         }
     }
     return result;
@@ -82,7 +84,7 @@ QList<Song*> SongRepository::getByAlbum(int albumId) {
             result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
                                    query.value(2).toInt(), query.value(3).toString(),
                                    query.value(4).toString(), query.value(5).toInt(),
-                                   query.value(6).toInt()));
+                                   query.value(6).toInt(), query.value(7).toString()));
         }
     }
     return result;
@@ -95,10 +97,11 @@ QList<Song*> SongRepository::getByArtist(int artistId) {
     query.addBindValue(artistId);
     if (query.exec()) {
         while (query.next()) {
+
             result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
                                    query.value(2).toInt(), query.value(3).toString(),
                                    query.value(4).toString(), query.value(5).toInt(),
-                                   query.value(6).toInt()));
+                                   query.value(6).toInt(), query.value(7).toString()));
         }
     }
     return result;
@@ -140,7 +143,7 @@ QList<Song*> SongRepository::searchSongs(QString name, QString genre, int year) 
             result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
                                    query.value(2).toInt(), query.value(3).toString(),
                                    query.value(4).toString(), query.value(5).toInt(),
-                                   query.value(6).toInt()));
+                                   query.value(6).toInt(), query.value(7).toString()));
         }
     }
     return result;
