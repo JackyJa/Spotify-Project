@@ -1,5 +1,6 @@
 #include "listenerwindow.h"
 #include "repositories.h"
+#include "playlistdetails.h"
 #include <qlabel.h>
 #include <QRegularExpression>
 #include <QFile>
@@ -72,6 +73,7 @@ void ListenerWindow::setupUI() {
     connect(btnViewArtists, &QPushButton::clicked, this, &ListenerWindow::viewArtists);
     connect(btnEditAccount, &QPushButton::clicked, this, &ListenerWindow::editAccount);
     connect(btnDeleteAccount, &QPushButton::clicked, this, &ListenerWindow::deleteAccount);
+    connect(playlistsList, &QListWidget::itemClicked, this, &ListenerWindow::viewPlaylistSongs);
 }
 
 void ListenerWindow::refreshPlaylists() {
@@ -358,4 +360,27 @@ void ListenerWindow::openChatbot() {
     ChatbotWindow* chat = new ChatbotWindow();
     chat->setAttribute(Qt::WA_DeleteOnClose);
     chat->show();
+}
+
+void ListenerWindow::viewPlaylistSongs(QListWidgetItem* item) {
+    if (item->text() == "Favorite Songs") {
+        QMessageBox::information(this, "Info", "Favorite songs are managed via the 'Like a Song' button.");
+        return;
+    }
+
+    QList<Playlist*> myPlaylists = playlistRepo->playlists(currentListener->getId());
+    int playlistId = -1;
+
+    for (int i = 0; i < myPlaylists.size(); ++i) {
+        if (myPlaylists.at(i)->getName() == item->text()) {
+            playlistId = myPlaylists.at(i)->getId();
+        }
+        delete myPlaylists.at(i);
+    }
+
+    if (playlistId == -1) return;
+
+    PlaylistDetailsWindow* details = new PlaylistDetailsWindow(playlistId, songRepo);
+    details->setAttribute(Qt::WA_DeleteOnClose);
+    details->exec();
 }

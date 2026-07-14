@@ -46,6 +46,7 @@ private slots:
     void searchSongs();
     void likeSong();
     void openChatbot();
+    void viewPlaylistSongs(QListWidgetItem* item);
 
 public:
     ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent = nullptr);
