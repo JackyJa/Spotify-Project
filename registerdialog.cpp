@@ -2,6 +2,8 @@
 #include "ui_registerdialog.h"
 #include <QMessageBox>
 #include <QRegularExpression>
+#include <QFileDialog>
+#include <QDebug>
 
 RegisterDialog::RegisterDialog(ArtistRepository* ar, ListenerRepository* lr, QWidget* parent) : QDialog(parent) {
     ui = new Ui::RegisterDialog;
@@ -9,6 +11,7 @@ RegisterDialog::RegisterDialog(ArtistRepository* ar, ListenerRepository* lr, QWi
     listenerRepo = lr;
     ui->setupUi(this);
     QObject::connect(ui->signupButton, &QPushButton::clicked, this, &RegisterDialog::attemptRegister);
+    connect(ui->btnSelectPhoto, &QPushButton::clicked, this, &RegisterDialog::onSelectPhotoClicked);
 }
 
 RegisterDialog::~RegisterDialog() {
@@ -51,11 +54,20 @@ void RegisterDialog::attemptRegister() {
     }
 
     if (role == "Artist") {
-        artistRepo->save(new Artist(0, fullName, userName, bio, password));
+        artistRepo->save(new Artist(0, fullName, userName, bio, password, selectedPhotoPath));
     } else {
-        listenerRepo->save(new Listener(0, fullName, userName, bio, password));
+        listenerRepo->save(new Listener(0, fullName, userName, bio, password, selectedPhotoPath));
     }
 
     QMessageBox::information(this, "Success", "Registration successful! Your password strength was: " + strength);
     this->accept();
+}
+
+void RegisterDialog::onSelectPhotoClicked() {
+    selectedPhotoPath = QFileDialog::getOpenFileName(this, "Select Profile Photo", "", "Image Files (*.jpg *.png *.jpeg)");
+    if (!selectedPhotoPath.isEmpty()) {
+        ui->btnSelectPhoto->setText("Photo Selected!");
+        QPixmap pix(selectedPhotoPath);
+        ui->photoPreviewLabel->setPixmap(pix.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
 }

@@ -38,6 +38,8 @@ QPushButton {
     padding-left: 20px;
 }
 QPushButton:hover { background-color: #383838; color: #1DB954; }
+QPushButton#btnSignOut { background-color: #535353; color: #FFFFFF; text-align: center; }
+QPushButton#btnSignOut:hover { background-color: #1DB954; color: #000000; }
 QPushButton#btnDeleteAccount { background-color: #ff4c4c; color: white; text-align: center; }
 QPushButton#btnDeleteAccount:hover { background-color: #cc0000; }
 QWidget#sidebar { background-color: #000000; border-right: 1px solid #282828; }</string>
@@ -94,11 +96,28 @@ QWidget#sidebar { background-color: #000000; border-right: 1px solid #282828; }<
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="welcomeLabel">
-         <property name="text">
-          <string>Welcome, Artist!</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="profileLayout">
+         <item>
+          <widget class="QLabel" name="profilePhotoLabel">
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="welcomeLabel">
+           <property name="text">
+            <string>Welcome, Artist!</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="Line" name="line">
@@ -144,7 +163,7 @@ QWidget#sidebar { background-color: #000000; border-right: 1px solid #282828; }<
        <item>
         <widget class="QPushButton" name="btnSignOut">
          <property name="text">
-          <string>            🚪 Sign Out</string>
+          <string>🚪 Sign Out</string>
          </property>
         </widget>
        </item>

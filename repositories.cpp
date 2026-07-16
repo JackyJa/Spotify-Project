@@ -225,13 +225,15 @@ QList<Playlist*> PlaylistRepository::playlists(int listenerId) {
 
 Account* ArtistRepository::save(Account* entity) {
     QSqlQuery query;
-    query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password) "
-                  "VALUES (?, ?, ?, ?, ?)");
+    query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password, profilePhotoPath) "
+                  "VALUES (?, ?, ?, ?, ?, ?)");
     query.addBindValue(entity->getFullName());
     query.addBindValue(entity->getUserName());
     query.addBindValue(entity->getBiography());
     query.addBindValue("Artist");
     query.addBindValue(entity->getPassword());
+    query.addBindValue(entity->getProfilePhotoPath());
+
 
     if (!query.exec()) {
         qDebug() << "Error saving artist:" << query.lastError().text();
@@ -277,7 +279,7 @@ Account* ArtistRepository::searchByUserName(QString userName) {
     if (query.exec() && query.next()) {
         return new Artist(query.value(0).toInt(), query.value(1).toString(),
                           query.value(2).toString(), query.value(3).toString(),
-                          query.value(5).toString());
+                          query.value(5).toString(), query.value(6).toString());
     }
     return nullptr;
 }
@@ -300,13 +302,16 @@ bool ArtistRepository::update(Account* entity) {
 
 Account* ListenerRepository::save(Account* entity) {
     QSqlQuery query;
-    query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password) "
-                  "VALUES (?, ?, ?, ?, ?)");
+    query.prepare("INSERT INTO accounts (fullName, userName, biography, role, password, profilePhotoPath) "
+                  "VALUES (?, ?, ?, ?, ?, ?)");
     query.addBindValue(entity->getFullName());
     query.addBindValue(entity->getUserName());
     query.addBindValue(entity->getBiography());
     query.addBindValue("Listener");
     query.addBindValue(entity->getPassword());
+    query.addBindValue(entity->getProfilePhotoPath());
+
+
 
     if (!query.exec()) {
         qDebug() << "Error saving listener:" << query.lastError().text();
@@ -352,7 +357,7 @@ Account* ListenerRepository::searchByUserName(QString userName) {
     if (query.exec() && query.next()) {
         return new Listener(query.value(0).toInt(), query.value(1).toString(),
                             query.value(2).toString(), query.value(3).toString(),
-                            query.value(5).toString());
+                            query.value(5).toString(), query.value(6).toString());
     }
     return nullptr;
 }

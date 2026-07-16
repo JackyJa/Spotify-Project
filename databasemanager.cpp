@@ -21,7 +21,8 @@ bool DatabaseManager::init() {
                "userName TEXT UNIQUE, "
                "biography TEXT, "
                "role TEXT, "
-               "password TEXT)");
+               "password TEXT, "
+               "profilePhotoPath TEXT)");
 
     query.exec("CREATE TABLE IF NOT EXISTS albums ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT, "

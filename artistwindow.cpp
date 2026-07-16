@@ -6,6 +6,9 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QRegularExpression>
+#include <QFile>
+#include <QPainter>
+#include <QPainterPath>
 
 ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent) : QMainWindow(parent) {
     ui = new Ui::ArtistWindow;
@@ -16,6 +19,30 @@ ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepositor
     albumRepo = new AlbumRepository();
 
     ui->welcomeLabel->setText("Welcome, " + currentArtist->getFullName() + "!");
+
+    QString photoPath = currentArtist->getProfilePhotoPath();
+    if (!photoPath.isEmpty() && QFile::exists(photoPath)) {
+        QPixmap pix(photoPath);
+        int size = 50;
+
+
+        QPixmap roundedPix(size, size);
+        roundedPix.fill(Qt::transparent);
+
+        QPainter painter(&roundedPix);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+
+
+        QPainterPath path;
+        path.addRoundedRect(0, 0, size, size, 25, 25);
+
+
+        painter.setClipPath(path);
+        painter.drawPixmap(0, 0, pix.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
+
+        ui->profilePhotoLabel->setPixmap(roundedPix);
+    }
 
     connect(ui->btnAddAlbum, &QPushButton::clicked, this, &ArtistWindow::addAlbum);
     connect(ui->btnAddSong, &QPushButton::clicked, this, &ArtistWindow::addSong);

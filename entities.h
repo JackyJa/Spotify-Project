@@ -13,12 +13,13 @@ private:
     QString profilePhotoPath;
 
 public:
-    Account(int accId, QString fn, QString un, QString bio, QString pass){
+    Account(int accId, QString fn, QString un, QString bio, QString pass, QString photo = "") {
         id = accId;
         fullName = fn;
         userName = un;
         biography = bio;
         password = pass;
+        profilePhotoPath = photo;
     }
 
     virtual ~Account() {}
@@ -28,30 +29,34 @@ public:
     QString getUserName() const { return userName; }
     QString getBiography() const { return biography; }
     QString getPassword() const { return password; }
+    QString getProfilePhotoPath() const { return profilePhotoPath; }
     virtual QString getRole() const = 0;
 
     void setFullName(QString fn) { fullName = fn; }
     void setUserName(QString un) { userName = un; }
     void setPassword(QString pass) { password = pass; }
     void setBiography(QString bio) { biography = bio; }
+    void setProfilePhotoPath(QString photo) { profilePhotoPath = photo; }
 
 
 };
 
 class Artist : public Account {
 public:
-    Artist(int accId, QString fn, QString un, QString bio, QString pass)
-        : Account(accId, fn, un, bio, pass) {}
+    Artist(int accId, QString fn, QString un, QString bio, QString pass, QString photo = "") : Account(accId, fn, un, bio, pass, photo) {}
 
-    QString getRole() const override { return "Artist"; }
+    QString getRole() const override {
+        return "Artist";
+    }
 };
 
 class Listener : public Account {
 public:
-    Listener(int accId, QString fn, QString un, QString bio, QString pass)
-        : Account(accId, fn, un, bio, pass) {}
+    Listener(int accId, QString fn, QString un, QString bio, QString pass, QString photo = "") : Account(accId, fn, un, bio, pass, photo) {}
 
-    QString getRole() const override { return "Listener"; }
+    QString getRole() const override {
+        return "Listener";
+    }
 };
 
 class Song {

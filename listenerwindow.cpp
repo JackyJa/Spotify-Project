@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QRegularExpression>
 #include <QFile>
+#include <QPainter>
+#include <QPainterPath>
 
 ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent) : QMainWindow(parent) {
     ui = new Ui::ListenerWindow;
@@ -22,6 +24,30 @@ ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRep
     audioOutput->setVolume(0.8);
 
     ui->welcomeLabel->setText("Welcome, " + currentListener->getFullName() + "!");
+
+    QString photoPath = currentListener->getProfilePhotoPath();
+    if (!photoPath.isEmpty() && QFile::exists(photoPath)) {
+        QPixmap pix(photoPath);
+        int size = 50;
+
+
+        QPixmap roundedPix(size, size);
+        roundedPix.fill(Qt::transparent);
+
+        QPainter painter(&roundedPix);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+
+
+        QPainterPath path;
+        path.addRoundedRect(0, 0, size, size, 25, 25);
+
+
+        painter.setClipPath(path);
+        painter.drawPixmap(0, 0, pix.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
+
+        ui->profilePhotoLabel->setPixmap(roundedPix);
+    }
 
 
     connect(ui->btnCreatePlaylist, &QPushButton::clicked, this, &ListenerWindow::createPlaylist);
