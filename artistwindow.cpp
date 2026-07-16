@@ -1,63 +1,46 @@
 #include "artistwindow.h"
-#include "repositories.h"
+#include "ui_artistwindow.h"
 #include "albumdetails.h"
-#include <QLabel>
-#include <QRegularExpression>
+#include "mainwindow.h"
+#include <QInputDialog>
+#include <QMessageBox>
 #include <QFileDialog>
+#include <QRegularExpression>
 
-ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent)
-    : QMainWindow(parent) {
+ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent) : QMainWindow(parent) {
+    ui = new Ui::ArtistWindow;
     currentArtist = user;
     artistRepo = aRepo;
     songRepo = sRepo;
+    ui->setupUi(this);
     albumRepo = new AlbumRepository();
-    setWindowTitle("Artist Dashboard - " + currentArtist->getUserName());
-    resize(500, 400);
-    setupUI();
+
+    ui->welcomeLabel->setText("Welcome, " + currentArtist->getFullName() + "!");
+
+    connect(ui->btnAddAlbum, &QPushButton::clicked, this, &ArtistWindow::addAlbum);
+    connect(ui->btnAddSong, &QPushButton::clicked, this, &ArtistWindow::addSong);
+    connect(ui->btnEditAccount, &QPushButton::clicked, this, &ArtistWindow::editAccount);
+    connect(ui->btnDeleteAccount, &QPushButton::clicked, this, &ArtistWindow::deleteAccount);
+    connect(ui->albumsList, &QListWidget::itemClicked, this, &ArtistWindow::viewAlbumSongs);
+    connect(ui->btnSignOut, &QPushButton::clicked, this, &ArtistWindow::signOut);
+
     refreshAlbums();
 }
 
 ArtistWindow::~ArtistWindow() {
+    delete ui;
     delete currentArtist;
     delete albumRepo;
 }
 
-void ArtistWindow::setupUI() {
-    centralWidget = new QWidget(this);
-    QVBoxLayout* layout = new QVBoxLayout(centralWidget);
-
-    QLabel* welcomeLabel = new QLabel("Welcome Artist: " + currentArtist->getFullName(), centralWidget);
-
-    albumsList = new QListWidget(centralWidget);
-    btnAddAlbum = new QPushButton("Create New Album", centralWidget);
-    btnAddSong = new QPushButton("Add New Song", centralWidget);
-    btnEditAccount = new QPushButton("Edit Account", centralWidget);
-    btnDeleteAccount = new QPushButton("Delete Account", centralWidget);
-
-    layout->addWidget(welcomeLabel);
-    layout->addWidget(new QLabel("Your Albums:"));
-    layout->addWidget(albumsList);
-    layout->addWidget(btnAddAlbum);
-    layout->addWidget(btnAddSong);
-    layout->addWidget(btnEditAccount);
-    layout->addWidget(btnDeleteAccount);
-
-    setCentralWidget(centralWidget);
-
-    connect(btnAddAlbum, &QPushButton::clicked, this, &ArtistWindow::addAlbum);
-    connect(btnAddSong, &QPushButton::clicked, this, &ArtistWindow::addSong);
-    connect(btnEditAccount, &QPushButton::clicked, this, &ArtistWindow::editAccount);
-    connect(btnDeleteAccount, &QPushButton::clicked, this, &ArtistWindow::deleteAccount);
-    connect(albumsList, &QListWidget::itemClicked, this, &ArtistWindow::viewAlbumSongs);
-}
-
 void ArtistWindow::refreshAlbums() {
-    albumsList->clear();
-    albumsList->addItem("Singles");
+    ui->albumsList->clear();
+    ui->albumsList->addItem("Singles");
 
     QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
     for (int i = 0; i < myAlbums.size(); i++) {
-        albumsList->addItem(myAlbums[i]->getName());
+        ui->albumsList->addItem(myAlbums[i]->getName());
+        delete myAlbums[i];
     }
 }
 
@@ -73,7 +56,7 @@ void ArtistWindow::addAlbum() {
     }
 
     albumRepo->save(new Album(0, name, currentArtist->getId(), coverPath));
-    QMessageBox::information(this, "Success", "Album created successfully in database.");
+    QMessageBox::information(this, "Success", "Album created successfully.");
     refreshAlbums();
 }
 
@@ -81,8 +64,8 @@ void ArtistWindow::addSong() {
     QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
     QStringList items;
     items << "Singles (No Album)";
-    for (int i = 0; i < myAlbums.size(); ++i) {
-        items << myAlbums.at(i)->getName();
+    for (int i = 0; i < myAlbums.size(); i++) {
+        items << myAlbums[i]->getName();
     }
 
     bool ok;
@@ -110,44 +93,37 @@ void ArtistWindow::addSong() {
 
     int selectedAlbumId = 0;
     if (choice != "Singles (No Album)") {
-        for (int i = 0; i < myAlbums.size(); ++i) {
-            if (myAlbums.at(i)->getName() == choice) {
+        for (int i = 0; i < myAlbums.size(); i++) {
+            if (myAlbums[i]->getName() == choice) {
                 selectedAlbumId = myAlbums[i]->getId();
                 break;
             }
         }
     }
-
     songRepo->save(new Song(0, name, year, genre, filePath, currentArtist->getId(), selectedAlbumId, coverPath));
-    QMessageBox::information(this, "Success", "Song added successfully in database.");
+    QMessageBox::information(this, "Success", "Song added successfully.");
 }
 
 void ArtistWindow::editAccount() {
     bool ok;
-    QString fullName = QInputDialog::getText(this, "Edit Account", "Full Name:", QLineEdit::Normal, currentArtist->getFullName(), &ok);
+    QString fullName = QInputDialog::getText(this, "Edit", "Full Name:", QLineEdit::Normal, currentArtist->getFullName(), &ok);
     if (!ok || fullName.isEmpty()) return;
-
-    QString userName = QInputDialog::getText(this, "Edit Account", "Username:", QLineEdit::Normal, currentArtist->getUserName(), &ok);
+    QString userName = QInputDialog::getText(this, "Edit", "Username:", QLineEdit::Normal, currentArtist->getUserName(), &ok);
     if (!ok || userName.isEmpty()) return;
-
-    QString bio = QInputDialog::getText(this, "Edit Account", "Biography:", QLineEdit::Normal, currentArtist->getBiography(), &ok);
+    QString bio = QInputDialog::getText(this, "Edit", "Biography:", QLineEdit::Normal, currentArtist->getBiography(), &ok);
     if (!ok || bio.isEmpty()) return;
-
-    QString password = QInputDialog::getText(this, "Edit Account", "New Password:", QLineEdit::Password, "", &ok);
+    QString password = QInputDialog::getText(this, "Edit", "New Password:", QLineEdit::Password, "", &ok);
     if (!ok || password.isEmpty()) return;
 
     QRegularExpression strongRegex("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{12,}");
     QRegularExpression mediumRegex("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9!@#$%^&*]).{6,}");
-
     QString strength;
     if (strongRegex.match(password).hasMatch()) strength = "Strong";
     else if (mediumRegex.match(password).hasMatch()) strength = "Medium";
     else strength = "Weak";
 
-    QMessageBox::information(this, "Password Strength", "Your password strength is: " + strength);
-
     if (strength == "Weak") {
-        QMessageBox::warning(this, "Error", "Password is too weak. Please use at least 6 chars with upper/lower case and numbers.");
+        QMessageBox::warning(this, "Error", "Password too weak.");
         return;
     }
 
@@ -155,21 +131,15 @@ void ArtistWindow::editAccount() {
     currentArtist->setUserName(userName);
     currentArtist->setBiography(bio);
     currentArtist->setPassword(password);
-
-    bool success = artistRepo->update(currentArtist);
-    if (success) {
-        QMessageBox::information(this, "Success", "Account updated in database.");
-    } else {
-        QMessageBox::warning(this, "Error", "Failed to update account in database.");
-    }
+    if (artistRepo->update(currentArtist)) QMessageBox::information(this, "Success", "Account updated.");
+    else QMessageBox::warning(this, "Error", "Update failed.");
 }
 
 void ArtistWindow::deleteAccount() {
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::question(this, "Delete", "Are you sure you want to delete your account?", QMessageBox::Yes|QMessageBox::No);
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Delete", "Are you sure?", QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         artistRepo->remove(currentArtist->getId());
-        this->close();
+        this->signOut();
     }
 }
 
@@ -179,17 +149,20 @@ void ArtistWindow::viewAlbumSongs(QListWidgetItem* item) {
 
     if (selected != "Singles") {
         QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
-        for (int i = 0; i < myAlbums.size(); ++i) {
-            if (myAlbums.at(i)->getName() == selected) {
-                albumId = myAlbums.at(i)->getId();
-            }
-            delete myAlbums.at(i);
+        for (int i = 0; i < myAlbums.size(); i++) {
+            if (myAlbums[i]->getName() == selected) albumId = myAlbums[i]->getId();
+            delete myAlbums[i];
         }
         if (albumId == 0) return;
     }
 
-
     AlbumDetailsWindow* details = new AlbumDetailsWindow(albumId, currentArtist->getId(), songRepo);
     details->setAttribute(Qt::WA_DeleteOnClose);
     details->exec();
+}
+
+void ArtistWindow::signOut() {
+    MainWindow* login = new MainWindow();
+    login->show();
+    this->close();
 }

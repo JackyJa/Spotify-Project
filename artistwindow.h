@@ -1,31 +1,26 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QListWidget>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QInputDialog>
-#include <QMessageBox>
+#include <QListWidgetItem>
 #include "entities.h"
 #include "repositories.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+    class ArtistWindow;
+}
+QT_END_NAMESPACE
 
 class ArtistWindow : public QMainWindow {
     Q_OBJECT
 
 private:
+    Ui::ArtistWindow* ui;
     Account* currentArtist;
     ArtistRepository* artistRepo;
     SongRepository* songRepo;
     AlbumRepository* albumRepo;
 
-    QWidget* centralWidget;
-    QListWidget* albumsList;
-    QPushButton* btnAddAlbum;
-    QPushButton* btnAddSong;
-    QPushButton* btnEditAccount;
-    QPushButton* btnDeleteAccount;
-
-    void setupUI();
     void refreshAlbums();
 
 private slots:
@@ -34,6 +29,7 @@ private slots:
     void editAccount();
     void deleteAccount();
     void viewAlbumSongs(QListWidgetItem* item);
+    void signOut();
 
 public:
     ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent = nullptr);

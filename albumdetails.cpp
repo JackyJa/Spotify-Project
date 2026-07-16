@@ -1,10 +1,14 @@
 #include "albumdetails.h"
 
-AlbumDetailsWindow::AlbumDetailsWindow(int albumId, int artistId, SongRepository* songRepo, QWidget* parent)
-    : QDialog(parent) {
+AlbumDetailsWindow::AlbumDetailsWindow(int albumId, int artistId, SongRepository* songRepo, QWidget* parent) : QDialog(parent) {
 
     setWindowTitle("Album Songs");
     resize(600, 400);
+    this->setStyleSheet("QDialog { background-color: #121212; }"
+                        "QTableWidget { background-color: #181818; color: #FFFFFF; border: none; font-size: 14px; }"
+                        "QTableWidget::item { padding: 10px; border-bottom: 1px solid #282828; }"
+                        "QTableWidget::item:selected { background-color: #1DB954; color: #000000; }"
+                        "QHeaderView::section { background-color: #000000; color: #1DB954; padding: 10px; border: none; font-weight: bold; font-size: 16px; }");
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     tableWidget = new QTableWidget(this);
@@ -22,12 +26,12 @@ AlbumDetailsWindow::AlbumDetailsWindow(int albumId, int artistId, SongRepository
     }
 
     tableWidget->setRowCount(songs.size());
-    for (int i = 0; i < songs.size(); ++i) {
+    for (int i = 0; i < songs.size(); i++) {
         tableWidget->setItem(i, 0, new QTableWidgetItem(songs.at(i)->getName()));
-        tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(songs.at(i)->getReleaseYear())));
-        tableWidget->setItem(i, 2, new QTableWidgetItem(songs.at(i)->getGenre()));
-        tableWidget->setItem(i, 3, new QTableWidgetItem(songs.at(i)->getCoverPath()));
-        delete songs.at(i);
+        tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(songs[i]->getReleaseYear())));
+        tableWidget->setItem(i, 2, new QTableWidgetItem(songs[i]->getGenre()));
+        tableWidget->setItem(i, 3, new QTableWidgetItem(songs[i]->getCoverPath()));
+        delete songs[i];
     }
 
     layout->addWidget(tableWidget);

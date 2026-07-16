@@ -1,30 +1,25 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QLabel>
 #include <QMessageBox>
-#include <QInputDialog>
-#include <QStringList>
 #include "repositories.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+    class MainWindow;
+}
+QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 private:
+    Ui::MainWindow* ui;
+
     ArtistRepository* artistRepo;
     ListenerRepository* listenerRepo;
     SongRepository* songRepo;
 
-    QWidget* loginWidget;
-    QLineEdit* usernameInput;
-    QLineEdit* passwordInput;
-    QPushButton* loginButton;
-    QPushButton* registerButton;
-
-    void setupLoginUI();
     void attemptLogin();
     void attemptRegister();
 

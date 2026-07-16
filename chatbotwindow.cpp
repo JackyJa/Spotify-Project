@@ -3,11 +3,19 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkRequest>
-#include <qlabel.h>
+#include <QLabel>
 
 ChatbotWindow::ChatbotWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("Spotify AI Assistant");
     resize(400, 500);
+
+    this->setStyleSheet("QMainWindow { background-color: #121212; }"
+                        "QLabel { color: #FFFFFF; font-weight: bold; }"
+                        "QTextEdit { background-color: #181818; color: #FFFFFF; border: 2px solid #282828; border-radius: 8px; padding: 10px; font-size: 14px; }"
+                        "QLineEdit { background-color: #282828; color: #FFFFFF; border: 2px solid #535353; border-radius: 15px; padding: 10px; font-size: 14px; }"
+                        "QLineEdit:focus { border: 2px solid #1DB954; }"
+                        "QPushButton { background-color: #1DB954; color: #000000; border: none; border-radius: 15px; padding: 10px; font-weight: bold; }"
+                        "QPushButton:hover { background-color: #1ed760; }");
     networkManager = new QNetworkAccessManager(this);
     setupUI();
 
@@ -62,7 +70,8 @@ void ChatbotWindow::receiveAnswer(QNetworkReply* reply) {
         QJsonDocument doc = QJsonDocument::fromJson(responseData);
         QString answer = doc.object().value("answer").toString();
         chatDisplay->append("AI: " + answer);
-    } else {
+    }
+    else {
         chatDisplay->append("AI: Error connecting to server. Make sure Python API is running.");
     }
     reply->deleteLater();

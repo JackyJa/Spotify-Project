@@ -11,7 +11,7 @@ public:
     virtual bool remove(int id) = 0;
     virtual T* search(int id) = 0;
     virtual QList<T*> getAll() = 0;
-    virtual ~AbstractRepository() {}
+    virtual ~AbstractRepository() {};
 };
 
 class SongRepository : public AbstractRepository<Song> {

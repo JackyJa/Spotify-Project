@@ -1,52 +1,43 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QListWidget>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QInputDialog>
-#include <QMessageBox>
 #include <QMediaPlayer>
+#include <QListWidgetItem>
 #include <QAudioOutput>
 #include "entities.h"
 #include "repositories.h"
-#include "chatbotwindow.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+    class ListenerWindow;
+}
+QT_END_NAMESPACE
 
 class ListenerWindow : public QMainWindow {
     Q_OBJECT
 
 private:
+    Ui::ListenerWindow* ui;
     Account* currentListener;
     ListenerRepository* listenerRepo;
     SongRepository* songRepo;
     PlaylistRepository* playlistRepo;
-
-    QWidget* centralWidget;
-    QListWidget* playlistsList;
-    QPushButton* btnCreatePlaylist;
-    QPushButton* btnViewArtists;
-    QPushButton* btnEditAccount;
-    QPushButton* btnDeleteAccount;
     QMediaPlayer* player;
     QAudioOutput* audioOutput;
-    QPushButton* btnPlayFromPlaylist;
-    QPushButton* btnSearchSongs;
-    QPushButton* btnLikeSong;
-    QPushButton* btnOpenChatbot;
 
-    void setupUI();
     void refreshPlaylists();
 
 private slots:
-    void playFromPlaylist();
     void createPlaylist();
     void viewArtists();
     void editAccount();
     void deleteAccount();
     void searchSongs();
     void likeSong();
+    void playFromPlaylist();
     void openChatbot();
     void viewPlaylistSongs(QListWidgetItem* item);
+    void signOut();
 
 public:
     ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent = nullptr);

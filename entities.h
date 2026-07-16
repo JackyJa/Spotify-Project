@@ -28,13 +28,14 @@ public:
     QString getUserName() const { return userName; }
     QString getBiography() const { return biography; }
     QString getPassword() const { return password; }
+    virtual QString getRole() const = 0;
 
     void setFullName(QString fn) { fullName = fn; }
     void setUserName(QString un) { userName = un; }
     void setPassword(QString pass) { password = pass; }
     void setBiography(QString bio) { biography = bio; }
 
-    virtual QString getRole() const = 0;
+
 };
 
 class Artist : public Account {
@@ -83,8 +84,10 @@ public:
     QString getAudioFilePath() const { return audioFilePath; }
     int getReleaseYear() const { return releaseYear; }
     QString getGenre() const { return genre; }
-    void setName(QString n) { name = n; }
     QString getCoverPath() const { return coverPath; }
+
+    void setName(QString n) { name = n; }
+
 };
 
 class Album {

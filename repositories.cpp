@@ -3,7 +3,6 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
-#include <QDebug>
 
 QList<Song*> SongRepository::getAll() {
     QList<Song*> result;
@@ -378,7 +377,8 @@ void ListenerRepository::updateLiked(int listenerId, int songId, bool isLiked) {
     QSqlQuery query;
     if (isLiked) {
         query.prepare("INSERT INTO likes (listenerId, songId) VALUES (?, ?)");
-    } else {
+    }
+    else {
         query.prepare("DELETE FROM likes WHERE listenerId = ? AND songId = ?");
     }
     query.addBindValue(listenerId);

@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql Multimedia Network)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql Multimedia Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql Multimedia Network MultimediaWidgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql Multimedia Network MultimediaWidgets)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -29,16 +29,23 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         .gitignore
         databasemanager.cpp
         databasemanager.h
-        artistwindow.cpp
-        artistwindow.h
-        listenerwindow.cpp
-        listenerwindow.h
+
+
+
+
         chatbotwindow.h
         chatbotwindow.cpp
         albumdetails.h
         albumdetails.cpp
         playlistdetails.cpp
         playlistdetails.h
+        mainwindow.ui
+        registerdialog.h
+        registerdialog.cpp
+        registerdialog.ui
+        listenerwindow.h listenerwindow.cpp listenerwindow.ui
+        artistwindow.h artistwindow.cpp artistwindow.ui
+
 
     )
 # Define target properties for Android with Qt 6 as:
@@ -59,7 +66,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(Project PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Sql Qt6::Multimedia Qt6::Network)
+target_link_libraries(Project PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Sql Qt6::Multimedia Qt6::Network Qt6::MultimediaWidgets)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
