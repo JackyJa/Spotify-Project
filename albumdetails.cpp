@@ -1,4 +1,21 @@
 #include "albumdetails.h"
+#include <QFile>
+#include <QListWidgetItem>
+#include <QPainter>
+#include <QPainterPath>
+
+QPixmap makeRoundedPixmapAlbum(const QString& path, int size) {
+    QPixmap src(path);
+    QPixmap roundedPix(size, size);
+    roundedPix.fill(Qt::transparent);
+    QPainter painter(&roundedPix);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    QPainterPath roundPath;
+    roundPath.addRoundedRect(0, 0, size, size, 10, 10);
+    painter.setClipPath(roundPath);
+    painter.drawPixmap(0, 0, src.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    return roundedPix;
+}
 
 AlbumDetailsWindow::AlbumDetailsWindow(int albumId, int artistId, SongRepository* songRepo, QWidget* parent) : QDialog(parent) {
 
@@ -12,10 +29,12 @@ AlbumDetailsWindow::AlbumDetailsWindow(int albumId, int artistId, SongRepository
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     tableWidget = new QTableWidget(this);
-    tableWidget->setColumnCount(4);
-    tableWidget->setHorizontalHeaderLabels({"Name", "Release Year", "Genre", "Cover Path"});
+    tableWidget->setColumnCount(5);
+    tableWidget->setHorizontalHeaderLabels({"Cover", "Name", "Release Year", "Genre", "Audio Path"});
     tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableWidget->setIconSize(QSize(50, 50));
+    tableWidget->verticalHeader()->setDefaultSectionSize(60);
 
     QList<Song*> songs;
     if (albumId == 0) {
@@ -27,10 +46,19 @@ AlbumDetailsWindow::AlbumDetailsWindow(int albumId, int artistId, SongRepository
 
     tableWidget->setRowCount(songs.size());
     for (int i = 0; i < songs.size(); i++) {
-        tableWidget->setItem(i, 0, new QTableWidgetItem(songs.at(i)->getName()));
-        tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(songs[i]->getReleaseYear())));
-        tableWidget->setItem(i, 2, new QTableWidgetItem(songs[i]->getGenre()));
-        tableWidget->setItem(i, 3, new QTableWidgetItem(songs[i]->getCoverPath()));
+
+        QTableWidgetItem* coverItem = new QTableWidgetItem();
+        QString coverPath = songs[i]->getCoverPath();
+        if (!coverPath.isEmpty() && QFile::exists(coverPath)) {
+            coverItem->setData(Qt::DecorationRole, makeRoundedPixmapAlbum(coverPath, 50));
+        }
+        tableWidget->setItem(i, 0, coverItem);
+
+
+        tableWidget->setItem(i, 1, new QTableWidgetItem(songs[i]->getName()));
+        tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(songs[i]->getReleaseYear())));
+        tableWidget->setItem(i, 3, new QTableWidgetItem(songs[i]->getGenre()));
+        tableWidget->setItem(i, 4, new QTableWidgetItem(songs[i]->getAudioFilePath()));
         delete songs[i];
     }
 

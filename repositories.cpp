@@ -116,7 +116,7 @@ QList<Song*> SongRepository::getByPlaylist(int playlistId) {
             result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
                                    query.value(2).toInt(), query.value(3).toString(),
                                    query.value(4).toString(), query.value(5).toInt(),
-                                   query.value(6).toInt()));
+                                   query.value(6).toInt(), query.value(7).toString()));
         }
     }
     return result;

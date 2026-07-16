@@ -27,9 +27,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
 MainWindow::~MainWindow() {
     delete ui;
-    delete artistRepo;
-    delete listenerRepo;
-    delete songRepo;
 }
 
 void MainWindow::attemptLogin() {

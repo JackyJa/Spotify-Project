@@ -10,6 +10,19 @@
 #include <QPainter>
 #include <QPainterPath>
 
+QPixmap makeRoundedPixmapArtist(const QString& path, int size) {
+    QPixmap src(path);
+    QPixmap roundedPix(size, size);
+    roundedPix.fill(Qt::transparent);
+    QPainter painter(&roundedPix);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    QPainterPath roundPath;
+    roundPath.addRoundedRect(0, 0, size, size, 10, 10);
+    painter.setClipPath(roundPath);
+    painter.drawPixmap(0, 0, src.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    return roundedPix;
+}
+
 ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepository* sRepo, QWidget* parent) : QMainWindow(parent) {
     ui = new Ui::ArtistWindow;
     currentArtist = user;
@@ -62,15 +75,23 @@ ArtistWindow::~ArtistWindow() {
 
 void ArtistWindow::refreshAlbums() {
     ui->albumsList->clear();
-    ui->albumsList->addItem("Singles");
+    ui->albumsList->setIconSize(QSize(40, 40));
+
+
+    ui->albumsList->addItem(new QListWidgetItem("Singles"));
 
     QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
     for (int i = 0; i < myAlbums.size(); i++) {
-        ui->albumsList->addItem(myAlbums[i]->getName());
+        QListWidgetItem* item = new QListWidgetItem(myAlbums[i]->getName());
+        QString coverPath = myAlbums[i]->getCoverPath();
+
+        if (!coverPath.isEmpty() && QFile::exists(coverPath)) {
+            item->setIcon(QIcon(makeRoundedPixmapArtist(coverPath, 40)));
+        }
+        ui->albumsList->addItem(item);
         delete myAlbums[i];
     }
 }
-
 void ArtistWindow::addAlbum() {
     bool ok;
     QString name = QInputDialog::getText(this, "Add Album", "Album Name:", QLineEdit::Normal, "", &ok);
@@ -128,6 +149,9 @@ void ArtistWindow::addSong() {
         }
     }
     songRepo->save(new Song(0, name, year, genre, filePath, currentArtist->getId(), selectedAlbumId, coverPath));
+    for (int i = 0; i < myAlbums.size(); i++) {
+        delete myAlbums[i];
+    }
     QMessageBox::information(this, "Success", "Song added successfully.");
 }
 
