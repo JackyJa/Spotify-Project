@@ -21,17 +21,10 @@ QPixmap makeRoundedPixmap(const QString& path, int size) {
     return roundedPix;
 }
 
-PlaylistDetailsWindow::PlaylistDetailsWindow(int playlistId, SongRepository* songRepo, QWidget* parent) : QDialog(parent) {
+PlaylistDetailsWindow::PlaylistDetailsWindow(int playlistId, SongRepository* songRepo, int listenerId, QWidget* parent) : QDialog(parent) {
 
     setWindowTitle("Playlist Songs");
     resize(400, 400);
-
-    this->setStyleSheet("QDialog { background-color: #121212; }"
-                        "QListWidget { background-color: #181818; color: #FFFFFF; border: none; border-radius: 8px; font-size: 16px; padding: 10px; }"
-                        "QListWidget::item { padding: 15px; border-bottom: 1px solid #282828; }"
-                        "QListWidget::item:selected { background-color: #1DB954; color: #000000; font-weight: bold; }");
-
-
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     songsList = new QListWidget(this);
@@ -50,7 +43,15 @@ PlaylistDetailsWindow::PlaylistDetailsWindow(int playlistId, SongRepository* son
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(0.8);
 
-    songs = songRepo->getByPlaylist(playlistId);
+
+    if (listenerId != -1) {
+        setWindowTitle("Favorite Songs");
+        songs = songRepo->getByLikedSongs(listenerId);
+    }
+    else {
+        songs = songRepo->getByPlaylist(playlistId);
+    }
+
     for (int i = 0; i < songs.size(); i++) {
         QListWidgetItem* item = new QListWidgetItem(songs[i]->getName());
         item->setTextAlignment(Qt::AlignCenter);

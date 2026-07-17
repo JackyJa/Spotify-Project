@@ -282,7 +282,9 @@ void ListenerWindow::playFromPlaylist() {
 
 void ListenerWindow::viewPlaylistSongs(QListWidgetItem* item) {
     if (item->text() == "Favorite Songs") {
-        QMessageBox::information(this, "Info", "Manage favorites via Like button.");
+        PlaylistDetailsWindow* details = new PlaylistDetailsWindow(-1, songRepo, currentListener->getId());
+        details->setAttribute(Qt::WA_DeleteOnClose);
+        details->exec();
         return;
     }
     QList<Playlist*> myPlaylists = playlistRepo->playlists(currentListener->getId());

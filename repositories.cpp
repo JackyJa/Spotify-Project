@@ -148,6 +148,22 @@ QList<Song*> SongRepository::searchSongs(QString name, QString genre, int year) 
     return result;
 }
 
+QList<Song*> SongRepository::getByLikedSongs(int listenerId) {
+    QList<Song*> result;
+    QSqlQuery query;
+    query.prepare("SELECT s.* FROM songs s JOIN likes l ON s.id = l.songId WHERE l.listenerId = ?");
+    query.addBindValue(listenerId);
+    if (query.exec()) {
+        while (query.next()) {
+            result.append(new Song(query.value(0).toInt(), query.value(1).toString(),
+                                   query.value(2).toInt(), query.value(3).toString(),
+                                   query.value(4).toString(), query.value(5).toInt(),
+                                   query.value(6).toInt(), query.value(7).toString()));
+        }
+    }
+    return result;
+}
+
 QList<Playlist*> PlaylistRepository::getAll() {
     QList<Playlist*> result;
     QSqlQuery query("SELECT * FROM playlists");

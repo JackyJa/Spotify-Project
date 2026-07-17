@@ -19,6 +19,6 @@ private slots:
     void onSongClicked(QListWidgetItem* item);
 
 public:
-    PlaylistDetailsWindow(int playlistId, SongRepository* songRepo, QWidget* parent = nullptr);
+    PlaylistDetailsWindow(int playlistId, SongRepository* songRepo, int listenerId = -1, QWidget* parent = nullptr);
     ~PlaylistDetailsWindow();
 };
