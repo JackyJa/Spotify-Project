@@ -26,6 +26,7 @@ public:
     QList<Song*> getByPlaylist(int playlistId);
     QList<Song*> searchSongs(QString name, QString genre, int year);
     QList<Song*> getByLikedSongs(int listenerId);
+    bool removeByAlbum(int albumId);
 };
 
 class PlaylistRepository : public AbstractRepository<Playlist> {
@@ -73,4 +74,5 @@ public:
     Album* search(int id) override;
     QList<Album*> getAll() override;
     QList<Album*> albums(int artistId);
+    bool update(Album* entity);
 };

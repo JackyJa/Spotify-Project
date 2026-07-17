@@ -164,6 +164,13 @@ QList<Song*> SongRepository::getByLikedSongs(int listenerId) {
     return result;
 }
 
+bool SongRepository::removeByAlbum(int albumId) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM songs WHERE albumId = ?");
+    query.addBindValue(albumId);
+    return query.exec();
+}
+
 QList<Playlist*> PlaylistRepository::getAll() {
     QList<Playlist*> result;
     QSqlQuery query("SELECT * FROM playlists");
@@ -473,4 +480,13 @@ QList<Album*> AlbumRepository::albums(int artistId) {
         }
     }
     return result;
+}
+
+bool AlbumRepository::update(Album* entity) {
+    QSqlQuery query;
+    query.prepare("UPDATE albums SET name=?, coverPath=? WHERE id=?");
+    query.addBindValue(entity->getName());
+    query.addBindValue(entity->getCoverPath());
+    query.addBindValue(entity->getId());
+    return query.exec();
 }

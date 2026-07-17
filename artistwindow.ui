@@ -188,6 +188,8 @@ QPushButton#btnDeleteAccount:hover { background-color: rgba(255, 50, 50, 0.2); b
          </property>
         </widget>
        </item>
+	   <item><widget class="QPushButton" name="btnEditAlbum"><property name="text"><string>✏️  Edit Album</string></property></widget></item>
+       <item><widget class="QPushButton" name="btnDeleteAlbum"><property name="text"><string>🗑️  Delete Album</string></property></widget></item>
        <item>
         <widget class="QPushButton" name="btnEditAccount">
          <property name="text">

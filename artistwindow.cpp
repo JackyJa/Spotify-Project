@@ -63,6 +63,8 @@ ArtistWindow::ArtistWindow(Account* user, ArtistRepository* aRepo, SongRepositor
     connect(ui->btnDeleteAccount, &QPushButton::clicked, this, &ArtistWindow::deleteAccount);
     connect(ui->albumsList, &QListWidget::itemClicked, this, &ArtistWindow::viewAlbumSongs);
     connect(ui->btnSignOut, &QPushButton::clicked, this, &ArtistWindow::signOut);
+    connect(ui->btnEditAlbum, &QPushButton::clicked, this, &ArtistWindow::editAlbum);
+    connect(ui->btnDeleteAlbum, &QPushButton::clicked, this, &ArtistWindow::deleteAlbum);
 
     refreshAlbums();
 }
@@ -216,4 +218,86 @@ void ArtistWindow::signOut() {
     MainWindow* login = new MainWindow();
     login->show();
     this->close();
+}
+
+void ArtistWindow::editAlbum() {
+    QListWidgetItem* selectedItem = ui->albumsList->currentItem();
+    if (!selectedItem) {
+        QMessageBox::warning(this, "Error", "Please select an album from the list first.");
+        return;
+    }
+    if (selectedItem->text() == "Singles") {
+        QMessageBox::warning(this, "Error", "Singles cannot be edited like an album.");
+        return;
+    }
+
+    QString oldName = selectedItem->text();
+    QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
+    Album* targetAlbum = nullptr;
+    for (int i = 0; i < myAlbums.size(); i++) {
+        if (myAlbums[i]->getName() == oldName) {
+            targetAlbum = myAlbums[i];
+        }
+        else {
+            delete myAlbums[i];
+        }
+    }
+    if (!targetAlbum) return;
+
+    bool ok;
+    QString newName = QInputDialog::getText(this, "Edit Album", "New Album Name:", QLineEdit::Normal, oldName, &ok);
+    if (!ok || newName.isEmpty()) {
+        delete targetAlbum;
+        return;
+    }
+
+    QString newCoverPath = QFileDialog::getOpenFileName(this, "Select New Album Cover (Leave empty to keep current)", "", "Image Files (*.jpg *.png *.jpeg)");
+    if (newCoverPath.isEmpty()) {
+        newCoverPath = targetAlbum->getCoverPath();
+    }
+
+    targetAlbum->setName(newName);
+    targetAlbum->setCoverPath(newCoverPath);
+
+    if (albumRepo->update(targetAlbum)) {
+        QMessageBox::information(this, "Success", "Album updated successfully.");
+    } else {
+        QMessageBox::warning(this, "Error", "Failed to update album.");
+    }
+
+    delete targetAlbum;
+    refreshAlbums();
+}
+
+void ArtistWindow::deleteAlbum() {
+    QListWidgetItem* selectedItem = ui->albumsList->currentItem();
+    if (!selectedItem) {
+        QMessageBox::warning(this, "Error", "Please select an album from the list first.");
+        return;
+    }
+    if (selectedItem->text() == "Singles") {
+        QMessageBox::warning(this, "Error", "Singles section cannot be deleted.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Delete Album", "Are you sure you want to delete this album and all its songs?", QMessageBox::Yes|QMessageBox::No);
+    if (reply != QMessageBox::Yes) return;
+
+    QString selectedName = selectedItem->text();
+    QList<Album*> myAlbums = albumRepo->albums(currentArtist->getId());
+    int albumId = -1;
+    for (int i = 0; i < myAlbums.size(); i++) {
+        if (myAlbums[i]->getName() == selectedName) {
+            albumId = myAlbums[i]->getId();
+        }
+        delete myAlbums[i];
+    }
+
+    if (albumId != -1) {
+        songRepo->removeByAlbum(albumId);
+        albumRepo->remove(albumId);
+        QMessageBox::information(this, "Success", "Album deleted successfully.");
+        refreshAlbums();
+    }
 }

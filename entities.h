@@ -114,6 +114,8 @@ public:
     QString getName() const { return name; }
     int getArtistId() const { return artistId; }
     QString getCoverPath() const { return coverPath; }
+    void setName(QString n) { name = n; }
+    void setCoverPath(QString c) { coverPath = c; }
 };
 
 class Playlist {
