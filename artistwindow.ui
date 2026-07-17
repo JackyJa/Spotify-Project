@@ -45,6 +45,54 @@ QPushButton#btnDeleteAccount:hover { background-color: #cc0000; }
 QWidget#sidebar { background-color: #000000; border-right: 1px solid #282828; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true">#centralWidget {
+    background-color: #050505;
+    background-image: qradialgradient(
+        cx:0.85, cy:0.15, radius: 1.5, fx:0.85, fy:0.15,
+        stop:0 rgba(29, 185, 84, 120), 
+        stop:0.25 #050505, 
+        stop:1 #000000
+    );
+}
+#sidebar {
+    background-color: rgba(10, 10, 10, 0.85);
+    border-right: 2px solid rgba(29, 185, 84, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+QLabel { color: #FFFFFF; font-weight: bold; }
+#titleLabel { color: #1DB954; font-size: 26px; font-weight: 900; }
+#albumHeader { color: #FFFFFF; font-size: 28px; }
+QListWidget {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #E0E0E0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    font-size: 16px;
+    padding: 15px;
+    outline: none;
+}
+QListWidget::item { padding: 12px; border-radius: 8px; }
+QListWidget::item:hover { background-color: rgba(255, 255, 255, 0.05); color: #1DB954; }
+QListWidget::item:selected { background-color: #1DB954; color: #000000; font-weight: bold; }
+QPushButton {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 20px;
+}
+QPushButton:hover { background-color: rgba(29, 185, 84, 0.1); border: 1px solid #1DB954; color: #1DB954; }
+QPushButton:pressed { background-color: #1DB954; color: #000000; }
+QPushButton#btnSignOut { text-align: center; color: #B3B3B3; }
+QPushButton#btnSignOut:hover { color: #FFFFFF; border: 1px solid #FFFFFF; }
+QPushButton#btnDeleteAccount { background-color: rgba(255, 50, 50, 0.1); color: #ff4c4c; border: 1px solid rgba(255, 76, 76, 0.3); text-align: center; }
+QPushButton#btnDeleteAccount:hover { background-color: rgba(255, 50, 50, 0.2); border: 1px solid #ff4c4c; }</string>
+   </property>
    <layout class="QHBoxLayout" name="mainLayout">
     <property name="spacing">
      <number>0</number>

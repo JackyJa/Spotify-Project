@@ -45,66 +45,173 @@ QPushButton#registerButton {
 QPushButton#registerButton:hover { background-color: #6a6a6a; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true">#centralWidget {
+    background-color: #050505;
+    background-image: qradialgradient(
+        cx:0.5, cy:0.1, radius: 1.2, fx:0.5, fy:0.1,
+        stop:0 rgba(29, 185, 84, 100), 
+        stop:0.3 #050505, 
+        stop:1 #000000
+    );
+}
+QLabel { color: #FFFFFF; background: transparent; }
+#titleLabel { color: #1DB954; font-size: 32px; font-weight: 900; }
+#subTitleLabel { color: #B3B3B3; font-size: 14px; font-weight: normal; }
+
+QLineEdit {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 12px;
+    font-size: 14px;
+}
+QLineEdit:focus { border: 1px solid #1DB954; background-color: rgba(29, 185, 84, 0.05); }
+
+QPushButton {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+QPushButton:hover { background-color: rgba(29, 185, 84, 0.1); border: 1px solid #1DB954; color: #1DB954; }
+
+
+QPushButton#loginButton {
+    background-color: #1DB954;
+    color: #000000;
+    border: none;
+}
+QPushButton#loginButton:hover { background-color: #1ed760; color: #000000; }
+
+
+QPushButton#registerButton {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #B3B3B3;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+QPushButton#registerButton:hover { border: 1px solid #FFFFFF; color: #FFFFFF; }</string>
+   </property>
    <layout class="QVBoxLayout" name="mainLayout">
-    <property name="spacing"><number>15</number></property>
-    <property name="leftMargin"><number>50</number></property>
-    <property name="topMargin"><number>50</number></property>
-    <property name="rightMargin"><number>50</number></property>
-    <property name="bottomMargin"><number>50</number></property>
+    <property name="spacing">
+     <number>15</number>
+    </property>
+    <property name="leftMargin">
+     <number>50</number>
+    </property>
+    <property name="topMargin">
+     <number>50</number>
+    </property>
+    <property name="rightMargin">
+     <number>50</number>
+    </property>
+    <property name="bottomMargin">
+     <number>50</number>
+    </property>
     <item>
      <widget class="QLabel" name="logoLabel">
-      <property name="text"><string>🎵</string></property>
-      <property name="alignment"><set>Qt::AlignCenter</set></property>
-      <property name="styleSheet"><string notr="true">font-size: 80px;</string></property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 80px;</string>
+      </property>
+      <property name="text">
+       <string>🎵</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="titleLabel">
-      <property name="text"><string>Spotify Music</string></property>
-      <property name="alignment"><set>Qt::AlignCenter</set></property>
-      <property name="styleSheet"><string notr="true">font-size: 32px; font-weight: bold; color: #1DB954;</string></property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 32px; font-weight: bold; color: #1DB954;</string>
+      </property>
+      <property name="text">
+       <string>Spotify Music</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="subTitleLabel">
-      <property name="text"><string>Millions of songs. No credit card needed.</string></property>
-      <property name="alignment"><set>Qt::AlignCenter</set></property>
-      <property name="styleSheet"><string notr="true">font-size: 14px; color: #B3B3B3;</string></property>
+      <property name="styleSheet">
+       <string notr="true">font-size: 14px; color: #B3B3B3;</string>
+      </property>
+      <property name="text">
+       <string>Millions of songs. No credit card needed.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
      </widget>
     </item>
     <item>
      <spacer name="verticalSpacer">
-      <property name="orientation"><enum>Qt::Vertical</enum></property>
-      <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
      </spacer>
     </item>
     <item>
      <widget class="QLineEdit" name="usernameInput">
-      <property name="placeholderText"><string>Username</string></property>
+      <property name="placeholderText">
+       <string>Username</string>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QLineEdit" name="passwordInput">
-      <property name="echoMode"><enum>QLineEdit::Password</enum></property>
-      <property name="placeholderText"><string>Password</string></property>
+      <property name="echoMode">
+       <enum>QLineEdit::EchoMode::Password</enum>
+      </property>
+      <property name="placeholderText">
+       <string>Password</string>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="loginButton">
-      <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-      <property name="text"><string>LOG IN</string></property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="text">
+       <string>LOG IN</string>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="registerButton">
-      <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-      <property name="text"><string>SIGN UP</string></property>
+      <property name="cursor">
+       <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="text">
+       <string>SIGN UP</string>
+      </property>
      </widget>
     </item>
     <item>
      <spacer name="verticalSpacer_2">
-      <property name="orientation"><enum>Qt::Vertical</enum></property>
-      <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
      </spacer>
     </item>
    </layout>

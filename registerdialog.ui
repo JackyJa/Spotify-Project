@@ -14,73 +14,197 @@
    <string>Sign Up - Spotify</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QDialog { background-color: #121212; }
-QLabel { color: #FFFFFF; font-size: 14px; font-weight: bold; }
+   <string notr="true">RegisterDialog {
+    background-color: #050505;
+    background-image: qradialgradient(
+        cx:0.2, cy:0.9, radius: 1.5, fx:0.2, fy:0.9,
+        stop:0 rgba(29, 185, 84, 80), 
+        stop:0.3 #050505, 
+        stop:1 #000000
+    );
+}
+QLabel { color: #FFFFFF; font-weight: bold; background: transparent; }
+#titleLabel { color: #1DB954; font-size: 24px; font-weight: 900; }
+#photoPreviewLabel { color: #535353; border: 2px dashed #535353; border-radius: 50px; background: transparent; }
+
 QLineEdit, QComboBox {
-    background-color: #282828;
+    background-color: rgba(255, 255, 255, 0.05);
     color: #FFFFFF;
-    border: 2px solid #535353;
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
     padding: 10px;
     font-size: 14px;
 }
-QLineEdit:focus, QComboBox:focus { border: 2px solid #1DB954; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #1DB954; }
+
 QPushButton {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 10px;
+    font-weight: bold;
+}
+QPushButton:hover { background-color: rgba(29, 185, 84, 0.1); border: 1px solid #1DB954; color: #1DB954; }
+
+
+QPushButton#signupButton {
     background-color: #1DB954;
     color: #000000;
     border: none;
     border-radius: 20px;
     padding: 12px;
-    font-size: 14px;
-    font-weight: bold;
 }
-QPushButton:hover { background-color: #1ed760; }
-QPushButton#btnSelectPhoto { background-color: #535353; color: #FFFFFF; }
-QPushButton#btnSelectPhoto:hover { background-color: #6a6a6a; }
+QPushButton#signupButton:hover { background-color: #1ed760; }
+
+
+QPushButton#btnSelectPhoto {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #B3B3B3;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+QPushButton#btnSelectPhoto:hover { border: 1px solid #1DB954; color: #1DB954; }
+
+
 QComboBox::drop-down { border: none; }
-QComboBox QAbstractItemView { background-color: #282828; color: #FFFFFF; selection-background-color: #1DB954; }</string>
+QComboBox QAbstractItemView { background-color: #282828; color: #FFFFFF; selection-background-color: #1DB954; border: 1px solid #535353; }</string>
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
-    <property name="leftMargin"><number>50</number></property>
-    <property name="topMargin"><number>30</number></property>
-    <property name="rightMargin"><number>50</number></property>
-    <property name="bottomMargin"><number>30</number></property>
-    <item>
-      <widget class="QLabel" name="titleLabel">
-        <property name="text"><string>Sign up for free</string></property>
-        <property name="alignment"><set>Qt::AlignCenter</set></property>
-        <property name="styleSheet"><string notr="true">font-size: 28px; font-weight: bold; color: #FFFFFF; margin-bottom: 10px;</string></property>
-      </widget>
-    </item>
-    <item>
-      <widget class="QLabel" name="photoPreviewLabel">
-        <property name="text"><string>No Photo Selected</string></property>
-        <property name="alignment"><set>Qt::AlignCenter</set></property>
-        <property name="styleSheet"><string notr="true">color: #535353; border: 2px dashed #535353; border-radius: 50px; min-height: 100px; max-height: 100px;</string></property>
-      </widget>
-    </item>
-    <item>
-      <widget class="QPushButton" name="btnSelectPhoto">
-        <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
-        <property name="text"><string>📷 Select Profile Photo</string></property>
-      </widget>
-    </item>
-    <item><widget class="QLabel" name="labelRole"><property name="text"><string>What's your role?</string></property></widget></item>
-    <item>
-      <widget class="QComboBox" name="roleCombo">
-        <item><property name="text"><string>Listener</string></property></item>
-        <item><property name="text"><string>Artist</string></property></item>
-      </widget>
-    </item>
-    <item><widget class="QLabel" name="labelFull"><property name="text"><string>Full Name</string></property></widget></item>
-    <item><widget class="QLineEdit" name="fullNameInput"><property name="placeholderText"><string>John Doe</string></property></widget></item>
-    <item><widget class="QLabel" name="labelBio"><property name="text"><string>Biography</string></property></widget></item>
-    <item><widget class="QLineEdit" name="bioInput"><property name="placeholderText"><string>Tell us about yourself...</string></property></widget></item>
-    <item><widget class="QLabel" name="labelUser"><property name="text"><string>Username</string></property></widget></item>
-    <item><widget class="QLineEdit" name="usernameInput"><property name="placeholderText"><string>Choose a unique username</string></property></widget></item>
-    <item><widget class="QLabel" name="labelPass"><property name="text"><string>Password</string></property></widget></item>
-    <item><widget class="QLineEdit" name="passwordInput"><property name="echoMode"><enum>QLineEdit::Password</enum></property><property name="placeholderText"><string>Create a password</string></property></widget></item>
-    <item><widget class="QPushButton" name="signupButton"><property name="text"><string>SIGN UP</string></property></widget></item>
+   <property name="leftMargin">
+    <number>50</number>
+   </property>
+   <property name="topMargin">
+    <number>30</number>
+   </property>
+   <property name="rightMargin">
+    <number>50</number>
+   </property>
+   <property name="bottomMargin">
+    <number>30</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="styleSheet">
+      <string notr="true">font-size: 28px; font-weight: bold; color: #FFFFFF; margin-bottom: 10px;</string>
+     </property>
+     <property name="text">
+      <string>Sign up for free</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="photoPreviewLabel">
+     <property name="styleSheet">
+      <string notr="true">color: #535353; border: 2px dashed #535353; border-radius: 50px; min-height: 100px; max-height: 100px;</string>
+     </property>
+     <property name="text">
+      <string>No Photo Selected</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnSelectPhoto">
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="text">
+      <string>📷 Select Profile Photo</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelRole">
+     <property name="text">
+      <string>What's your role?</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="roleCombo">
+     <item>
+      <property name="text">
+       <string>Listener</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Artist</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelFull">
+     <property name="text">
+      <string>Full Name</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="fullNameInput">
+     <property name="placeholderText">
+      <string>John Doe</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelBio">
+     <property name="text">
+      <string>Biography</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="bioInput">
+     <property name="placeholderText">
+      <string>Tell us about yourself...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelUser">
+     <property name="text">
+      <string>Username</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="usernameInput">
+     <property name="placeholderText">
+      <string>Choose a unique username</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelPass">
+     <property name="text">
+      <string>Password</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="passwordInput">
+     <property name="echoMode">
+      <enum>QLineEdit::EchoMode::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>Create a password</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="signupButton">
+     <property name="text">
+      <string>SIGN UP</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
