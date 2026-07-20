@@ -60,6 +60,7 @@ ListenerWindow::ListenerWindow(Account* user, ListenerRepository* lRepo, SongRep
     connect(ui->btnOpenChatbot, &QPushButton::clicked, this, &ListenerWindow::openChatbot);
     connect(ui->playlistsList, &QListWidget::itemClicked, this, &ListenerWindow::viewPlaylistSongs);
     connect(ui->btnSignOut, &QPushButton::clicked, this, &ListenerWindow::signOut);
+    connect(ui->btnDeletePlaylist, &QPushButton::clicked, this, &ListenerWindow::deletePlaylist);
 
     refreshPlaylists();
 }
@@ -282,7 +283,8 @@ void ListenerWindow::playFromPlaylist() {
 
 void ListenerWindow::viewPlaylistSongs(QListWidgetItem* item) {
     if (item->text() == "Favorite Songs") {
-        PlaylistDetailsWindow* details = new PlaylistDetailsWindow(-1, songRepo, currentListener->getId());
+        PlaylistDetailsWindow* details = new PlaylistDetailsWindow(-1, songRepo, playlistRepo, currentListener->getId());
+
         details->setAttribute(Qt::WA_DeleteOnClose);
         details->exec();
         return;
@@ -293,8 +295,10 @@ void ListenerWindow::viewPlaylistSongs(QListWidgetItem* item) {
         if (myPlaylists[i]->getName() == item->text()) playlistId = myPlaylists[i]->getId();
         delete myPlaylists[i];
     }
-    if (playlistId == -1) return;
-    PlaylistDetailsWindow* details = new PlaylistDetailsWindow(playlistId, songRepo);
+    if (playlistId == -1) {
+        return;
+    }
+    PlaylistDetailsWindow* details = new PlaylistDetailsWindow(playlistId, songRepo, playlistRepo);
     details->setAttribute(Qt::WA_DeleteOnClose);
     details->exec();
 }
@@ -344,4 +348,35 @@ void ListenerWindow::signOut() {
     MainWindow* login = new MainWindow();
     login->show();
     this->close();
+}
+
+void ListenerWindow::deletePlaylist() {
+    QListWidgetItem* selectedItem = ui->playlistsList->currentItem();
+    if (!selectedItem) {
+        QMessageBox::warning(this, "Error", "Please select a playlist from the list first.");
+        return;
+    }
+    if (selectedItem->text() == "Favorite Songs") {
+        QMessageBox::warning(this, "Error", "Favorite Songs list cannot be deleted.");
+        return;
+    }
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this, "Delete Playlist", "Are you sure you want to delete this playlist?", QMessageBox::Yes|QMessageBox::No);
+    if (reply != QMessageBox::Yes) return;
+
+    QList<Playlist*> myPlaylists = playlistRepo->playlists(currentListener->getId());
+    int playlistId = -1;
+    for (int i = 0; i < myPlaylists.size(); i++) {
+        if (myPlaylists[i]->getName() == selectedItem->text()) {
+            playlistId = myPlaylists[i]->getId();
+        }
+        delete myPlaylists[i];
+    }
+
+    if (playlistId != -1) {
+        playlistRepo->remove(playlistId);
+        QMessageBox::information(this, "Success", "Playlist deleted successfully.");
+        refreshPlaylists();
+    }
 }

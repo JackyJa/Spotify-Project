@@ -5,6 +5,7 @@
 #include <QListWidgetItem>
 #include <QPainter>
 #include <QPainterPath>
+#include <QPushButton>
 
 QPixmap makeRoundedPixmap(const QString& path, int size) {
     QPixmap src(path);
@@ -21,14 +22,14 @@ QPixmap makeRoundedPixmap(const QString& path, int size) {
     return roundedPix;
 }
 
-PlaylistDetailsWindow::PlaylistDetailsWindow(int playlistId, SongRepository* songRepo, int listenerId, QWidget* parent) : QDialog(parent) {
-
+PlaylistDetailsWindow::PlaylistDetailsWindow(int plId, SongRepository* songRepo, PlaylistRepository* plRepo, int listenerId, QWidget* parent) : QDialog(parent) {
+    playlistId = plId;
+    playlistRepo = plRepo;
     setWindowTitle("Playlist Songs");
-    resize(400, 400);
+    resize(400, 450);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     songsList = new QListWidget(this);
-
 
     songsList->setViewMode(QListWidget::IconMode);
     songsList->setIconSize(QSize(100, 100));
@@ -36,17 +37,22 @@ PlaylistDetailsWindow::PlaylistDetailsWindow(int playlistId, SongRepository* son
     songsList->setMovement(QListWidget::Static);
     songsList->setSpacing(15);
 
+
+    QPushButton* btnRemoveSong = new QPushButton("Remove Selected Song", this);
+    btnRemoveSong->setStyleSheet("background-color: #ff4c4c; color: white; border-radius: 15px; padding: 10px; font-weight: bold;");
+
     layout->addWidget(songsList);
+    layout->addWidget(btnRemoveSong);
 
     player = new QMediaPlayer(this);
     audioOutput = new QAudioOutput(this);
     player->setAudioOutput(audioOutput);
     audioOutput->setVolume(0.8);
 
-
     if (listenerId != -1) {
         setWindowTitle("Favorite Songs");
         songs = songRepo->getByLikedSongs(listenerId);
+        btnRemoveSong->setVisible(false);
     }
     else {
         songs = songRepo->getByPlaylist(playlistId);
@@ -64,6 +70,7 @@ PlaylistDetailsWindow::PlaylistDetailsWindow(int playlistId, SongRepository* son
     }
 
     connect(songsList, &QListWidget::itemClicked, this, &PlaylistDetailsWindow::onSongClicked);
+    connect(btnRemoveSong, &QPushButton::clicked, this, &PlaylistDetailsWindow::onRemoveSongClicked);
 }
 
 PlaylistDetailsWindow::~PlaylistDetailsWindow() {
@@ -89,5 +96,26 @@ void PlaylistDetailsWindow::onSongClicked(QListWidgetItem* item) {
                 QMessageBox::warning(this, "Error", "Audio file not found on disk.");
             }
         }
+    }
+}
+
+void PlaylistDetailsWindow::onRemoveSongClicked() {
+    QListWidgetItem* selectedItem = songsList->currentItem();
+    if (!selectedItem) {
+        QMessageBox::warning(this, "Error", "Please select a song first.");
+        return;
+    }
+
+    int row = songsList->row(selectedItem);
+    if (row >= 0 && row < songs.size()) {
+        int songId = songs[row]->getId();
+
+        playlistRepo->removeSong(playlistId, songId);
+
+
+        delete songsList->takeItem(row);
+        delete songs.takeAt(row);
+
+        QMessageBox::information(this, "Success", "Song removed from playlist.");
     }
 }

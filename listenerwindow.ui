@@ -271,6 +271,7 @@ QPushButton#btnSignOut:hover {
          </property>
         </widget>
        </item>
+	   <item><widget class="QPushButton" name="btnDeletePlaylist"><property name="text"><string>🗑️  Delete Playlist</string></property></widget></item>
        <item>
         <widget class="QPushButton" name="btnEditAccount">
          <property name="text">

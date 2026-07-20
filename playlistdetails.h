@@ -14,11 +14,13 @@ private:
     QMediaPlayer* player;
     QAudioOutput* audioOutput;
     QList<Song*> songs;
-
+    int playlistId;
+    PlaylistRepository* playlistRepo;
 private slots:
     void onSongClicked(QListWidgetItem* item);
+    void onRemoveSongClicked();
 
 public:
-    PlaylistDetailsWindow(int playlistId, SongRepository* songRepo, int listenerId = -1, QWidget* parent = nullptr);
+    PlaylistDetailsWindow(int plId, SongRepository* songRepo, PlaylistRepository* plRepo, int listenerId = -1, QWidget* parent = nullptr);
     ~PlaylistDetailsWindow();
 };

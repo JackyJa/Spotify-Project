@@ -24,7 +24,6 @@ private:
     PlaylistRepository* playlistRepo;
     QMediaPlayer* player;
     QAudioOutput* audioOutput;
-
     void refreshPlaylists();
 
 private slots:
@@ -38,6 +37,7 @@ private slots:
     void openChatbot();
     void viewPlaylistSongs(QListWidgetItem* item);
     void signOut();
+    void deletePlaylist();
 
 public:
     ListenerWindow(Account* user, ListenerRepository* lRepo, SongRepository* sRepo, QWidget* parent = nullptr);
