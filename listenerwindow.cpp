@@ -283,8 +283,7 @@ void ListenerWindow::playFromPlaylist() {
 
 void ListenerWindow::viewPlaylistSongs(QListWidgetItem* item) {
     if (item->text() == "Favorite Songs") {
-        PlaylistDetailsWindow* details = new PlaylistDetailsWindow(-1, songRepo, playlistRepo, currentListener->getId());
-
+        PlaylistDetailsWindow* details = new PlaylistDetailsWindow(-1, songRepo, playlistRepo, listenerRepo, currentListener->getId());
         details->setAttribute(Qt::WA_DeleteOnClose);
         details->exec();
         return;

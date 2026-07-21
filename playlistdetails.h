@@ -16,11 +16,14 @@ private:
     QList<Song*> songs;
     int playlistId;
     PlaylistRepository* playlistRepo;
+    int listenerId;
+    ListenerRepository* listenerRepo;
+
 private slots:
     void onSongClicked(QListWidgetItem* item);
     void onRemoveSongClicked();
 
 public:
-    PlaylistDetailsWindow(int plId, SongRepository* songRepo, PlaylistRepository* plRepo, int listenerId = -1, QWidget* parent = nullptr);
+    PlaylistDetailsWindow(int plId, SongRepository* songRepo, PlaylistRepository* plRepo, ListenerRepository* lRepo = nullptr, int listenerId = -1, QWidget* parent = nullptr);
     ~PlaylistDetailsWindow();
 };

@@ -22,7 +22,9 @@ QPixmap makeRoundedPixmap(const QString& path, int size) {
     return roundedPix;
 }
 
-PlaylistDetailsWindow::PlaylistDetailsWindow(int plId, SongRepository* songRepo, PlaylistRepository* plRepo, int listenerId, QWidget* parent) : QDialog(parent) {
+PlaylistDetailsWindow::PlaylistDetailsWindow(int plId, SongRepository* songRepo, PlaylistRepository* plRepo, ListenerRepository* lRepo, int listenerId, QWidget* parent) : QDialog(parent) {
+    this->listenerId = listenerId;
+    listenerRepo = lRepo;
     playlistId = plId;
     playlistRepo = plRepo;
     setWindowTitle("Playlist Songs");
@@ -52,7 +54,7 @@ PlaylistDetailsWindow::PlaylistDetailsWindow(int plId, SongRepository* songRepo,
     if (listenerId != -1) {
         setWindowTitle("Favorite Songs");
         songs = songRepo->getByLikedSongs(listenerId);
-        btnRemoveSong->setVisible(false);
+        btnRemoveSong->setText("Unlike Selected Song");
     }
     else {
         songs = songRepo->getByPlaylist(playlistId);
@@ -100,22 +102,25 @@ void PlaylistDetailsWindow::onSongClicked(QListWidgetItem* item) {
 }
 
 void PlaylistDetailsWindow::onRemoveSongClicked() {
-    QListWidgetItem* selectedItem = songsList->currentItem();
-    if (!selectedItem) {
+    int row = songsList->currentRow();
+    if (row < 0 || row >= songs.size()) {
         QMessageBox::warning(this, "Error", "Please select a song first.");
         return;
     }
 
-    int row = songsList->row(selectedItem);
-    if (row >= 0 && row < songs.size()) {
-        int songId = songs[row]->getId();
-
-        playlistRepo->removeSong(playlistId, songId);
+    int songId = songs[row]->getId();
 
 
-        delete songsList->takeItem(row);
-        delete songs.takeAt(row);
-
-        QMessageBox::information(this, "Success", "Song removed from playlist.");
+    if (listenerId != -1) {
+        listenerRepo->updateLiked(listenerId, songId, false);
     }
+    else {
+        playlistRepo->removeSong(playlistId, songId);
+    }
+
+
+    delete songs.takeAt(row);;
+    delete songsList->takeItem(row);
+
+    QMessageBox::information(this, "Success", "Song removed successfully.");
 }
