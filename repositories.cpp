@@ -36,7 +36,31 @@ Song* SongRepository::save(Song* entity) {
     return entity;
 }
 
+bool SongRepository::update(Song* entity) {
+    QSqlQuery query;
+    query.prepare("UPDATE songs SET name=?, releaseYear=?, genre=?, coverPath=? WHERE id=?");
+    query.addBindValue(entity->getName());
+    query.addBindValue(entity->getReleaseYear());
+    query.addBindValue(entity->getGenre());
+    query.addBindValue(entity->getCoverPath());
+    query.addBindValue(entity->getId());
+    return query.exec();
+}
+
 bool SongRepository::remove(int id) {
+
+    QSqlQuery q1;
+    q1.prepare("DELETE FROM playlist_songs WHERE songId = ?");
+    q1.addBindValue(id);
+    q1.exec();
+
+
+    QSqlQuery q2;
+    q2.prepare("DELETE FROM likes WHERE songId = ?");
+    q2.addBindValue(id);
+    q2.exec();
+
+
     QSqlQuery query;
     query.prepare("DELETE FROM songs WHERE id = ?");
     query.addBindValue(id);

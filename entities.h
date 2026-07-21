@@ -70,6 +70,7 @@ private:
     int albumId;
     QString coverPath;
 
+
 public:
     Song(int sId, QString n, int year, QString g, QString path, int aId, int alId, QString cover = "") {
         id = sId;
@@ -92,6 +93,9 @@ public:
     QString getCoverPath() const { return coverPath; }
 
     void setName(QString n) { name = n; }
+    void setReleaseYear(int y) { releaseYear = y; }
+    void setGenre(QString g) { genre = g; }
+    void setCoverPath(QString c) { coverPath = c; }
 
 };
 
