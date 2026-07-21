@@ -190,7 +190,10 @@ void ListenerWindow::searchSongs() {
     if (!yearStr.isEmpty()) year = yearStr.toInt();
 
     QList<Song*> songs = songRepo->searchSongs(name, genre, year);
-    if (songs.isEmpty()) { QMessageBox::information(this, "Result", "No songs found."); return; }
+    if (songs.isEmpty()) {
+        QMessageBox::information(this, "Result", "No songs found.");
+        return;
+    }
     QStringList songNames;
     for (int i = 0; i < songs.size(); i++) {
         songNames << songs[i]->getName();
@@ -246,7 +249,9 @@ void ListenerWindow::playFromPlaylist() {
     }
     int plId = -1;
     for (int i = 0; i < myPlaylists.size(); i++) {
-        if (myPlaylists[i]->getName() == plChoice) plId = myPlaylists[i]->getId();
+        if (myPlaylists[i]->getName() == plChoice) {
+            plId = myPlaylists[i]->getId();
+        }
         delete myPlaylists[i];
     }
     if (plId == -1) return;
@@ -273,7 +278,7 @@ void ListenerWindow::playFromPlaylist() {
             if (QFile::exists(path)) {
                 player->setSource(QUrl::fromLocalFile(path));
                 player->play();
-                QMessageBox::information(this, "Now Playing", "Playing: " + songs.at(i)->getName());
+                QMessageBox::information(this, "Now Playing", "Playing: " + songs[i]->getName());
             }
             else QMessageBox::warning(this, "Error", "File not found.");
         }
@@ -291,7 +296,9 @@ void ListenerWindow::viewPlaylistSongs(QListWidgetItem* item) {
     QList<Playlist*> myPlaylists = playlistRepo->playlists(currentListener->getId());
     int playlistId = -1;
     for (int i = 0; i < myPlaylists.size(); i++) {
-        if (myPlaylists[i]->getName() == item->text()) playlistId = myPlaylists[i]->getId();
+        if (myPlaylists[i]->getName() == item->text()) {
+            playlistId = myPlaylists[i]->getId();
+        }
         delete myPlaylists[i];
     }
     if (playlistId == -1) {
@@ -319,13 +326,18 @@ void ListenerWindow::editAccount() {
     if (strongRegex.match(password).hasMatch()) strength = "Strong";
     else if (mediumRegex.match(password).hasMatch()) strength = "Medium";
     else strength = "Weak";
-    if (strength == "Weak") { QMessageBox::warning(this, "Error", "Password too weak."); return; }
+    if (strength == "Weak") {
+        QMessageBox::warning(this, "Error", "Password too weak.");
+        return;
+    }
 
     currentListener->setFullName(fullName);
     currentListener->setUserName(userName);
     currentListener->setBiography(bio);
     currentListener->setPassword(password);
-    if (listenerRepo->update(currentListener)) QMessageBox::information(this, "Success", "Account updated.");
+    if (listenerRepo->update(currentListener)) {
+        QMessageBox::information(this, "Success", "Account updated.");
+    }
     else QMessageBox::warning(this, "Error", "Update failed.");
 }
 

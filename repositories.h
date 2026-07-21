@@ -2,7 +2,6 @@
 
 #include "entities.h"
 #include <QList>
-#include <stdexcept>
 
 template <typename T>
 class AbstractRepository {

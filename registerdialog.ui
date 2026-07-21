@@ -200,6 +200,9 @@ QComboBox QAbstractItemView { background-color: #282828; color: #FFFFFF; selecti
    </item>
    <item>
     <widget class="QPushButton" name="signupButton">
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
      <property name="text">
       <string>SIGN UP</string>
      </property>

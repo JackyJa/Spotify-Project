@@ -92,7 +92,7 @@ void PlaylistDetailsWindow::onSongClicked(QListWidgetItem* item) {
             if (QFile::exists(path)) {
                 player->setSource(QUrl::fromLocalFile(path));
                 player->play();
-                QMessageBox::information(this, "Now Playing", "Playing: " + songs.at(row)->getName());
+                QMessageBox::information(this, "Now Playing", "Playing: " + songs[row]->getName());
             }
             else {
                 QMessageBox::warning(this, "Error", "Audio file not found on disk.");
@@ -119,7 +119,7 @@ void PlaylistDetailsWindow::onRemoveSongClicked() {
     }
 
 
-    delete songs.takeAt(row);;
+    delete songs.takeAt(row);
     delete songsList->takeItem(row);
 
     QMessageBox::information(this, "Success", "Song removed successfully.");
